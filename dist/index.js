@@ -3866,7 +3866,7 @@ var Messages = function Messages(props) {
       }, index === keys.length - 1 && /*#__PURE__*/React__default.createElement(RenderTrigger, {
         id: "ce-first-message-render-trigger",
         onEnter: function onEnter() {
-          return setIsBottomVisible(true);
+          return setIsBottomVisible(false);
         },
         onLeave: function onLeave() {
           return setIsBottomVisible(false);
@@ -3880,7 +3880,7 @@ var Messages = function Messages(props) {
     }, index === keys.length - 1 && /*#__PURE__*/React__default.createElement(RenderTrigger, {
       id: "ce-last-message-render-trigger",
       onEnter: function onEnter() {
-        return setIsBottomVisible(true);
+        return setIsBottomVisible(false);
       },
       onLeave: function onLeave() {
         return setIsBottomVisible(false);
