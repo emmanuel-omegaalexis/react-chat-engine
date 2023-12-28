@@ -1,13 +1,26 @@
-import React, { useState, useRef, useContext, useEffect } from 'react'
+import React, {
+  useState,
+  useRef,
+  useContext,
+  useEffect
+} from 'react'
 
 import SocketChild from './Socket4'
-import { getOrCreateSession } from './getOrCreateSession'
-import { ChatEngineContext } from 'react-chat-engine'
+import {
+  getOrCreateSession
+} from './getOrCreateSession'
+import {
+  ChatEngineContext
+} from 'react-chat-engine'
 
 const Socket = (props) => {
   const didMountRef = useRef(false)
   const [isHidden, setIsHidden] = useState(false)
-  const { setConn, setCreds, setSessionToken } = useContext(ChatEngineContext)
+  const {
+    setConn,
+    setCreds,
+    setSessionToken
+  } = useContext(ChatEngineContext)
 
   useEffect(() => {
     if (!didMountRef.current) {
@@ -23,7 +36,7 @@ const Socket = (props) => {
       setConn(props)
       setCreds(props)
       setSessionToken(localStorage.getItem(sessionKey))
-      console.log('Local fetch!')
+      // console.log('Local fetch!')
       return
     }
 
@@ -60,9 +73,15 @@ const Socket = (props) => {
     setTimeout(() => setIsHidden(false), 100)
   }
 
-  if (isHidden) return <div />
+  if (isHidden) return <div / >
 
-  return <SocketChild {...props} reRender={() => reRender()} />
+    return <SocketChild {
+      ...props
+    }
+  reRender = {
+    () => reRender()
+  }
+  />
 }
 
 export default Socket

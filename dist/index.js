@@ -165,7 +165,6 @@ var Socket = function Socket(props) {
   var handleEvent = function handleEvent(event) {
     try {
       var eventJSON = JSON.parse(event);
-      console.log('eventJSON.action', eventJSON.action);
 
       if (eventJSON.action === 'pong') {
         setShouldPongBy(Date.now() + minLag);
@@ -303,7 +302,6 @@ var Socket = function Socket(props) {
 
   function onConnect() {
     if (Date.now() > initialLoadTime || conn.renderChatFeed || conn.renderChatList) {
-      console.log('Refresh');
       reactChatEngine.getLatestChats(conn, 25, function (chats) {
         return setChats(_.mapKeys(chats, 'id'));
       });

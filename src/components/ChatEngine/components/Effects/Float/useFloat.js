@@ -42,7 +42,6 @@ export default function useBoop({
         return () => { window.clearTimeout(timeoutId); };
     }, [isBooped]);
     const trigger = React.useCallback(() => {
-        console.log('here')
         setIsBooped(true);
     }, []);
     return [style, trigger];

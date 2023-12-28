@@ -1,4 +1,8 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, {
+  useContext,
+  useState,
+  useEffect
+} from 'react'
 
 import {
   ChatEngineContext,
@@ -6,7 +10,9 @@ import {
   getLatestMessages
 } from 'react-chat-engine'
 
-import { WebSocket } from 'nextjs-websocket'
+import {
+  WebSocket
+} from 'nextjs-websocket'
 
 import _ from 'lodash'
 
@@ -38,8 +44,8 @@ const SocketChild = (props) => {
 
   useEffect(() => {
     if (now > shouldPongBy) {
-      console.log('shouldPongBy', shouldPongBy)
-      console.log('now', now)
+      // console.log('shouldPongBy', shouldPongBy)
+      // console.log('now', now)
       props.reRender && props.reRender()
       setShouldPongBy(Date.now() + minLag)
     }
@@ -55,7 +61,9 @@ const SocketChild = (props) => {
 
   function onEditChat(chat) {
     if (chats) {
-      const newChats = { ...chats }
+      const newChats = {
+        ...chats
+      }
       newChats[chat.id] = chat
       setChats(newChats)
     }
@@ -89,7 +97,10 @@ const SocketChild = (props) => {
 
     if (Date.now() > reconnect) {
       getLatestMessages(conn, props.chatID, 45, (id, list) => {
-        setMessages({ ...messages, ..._.mapKeys(list, 'created') })
+        setMessages({
+          ...messages,
+          ..._.mapKeys(list, 'created')
+        })
       })
     }
 
@@ -138,17 +149,25 @@ const SocketChild = (props) => {
 
       props.onRemovePerson && props.onRemovePerson(eventJSON.data)
     } else if (eventJSON.action === 'new_message') {
-      const { id, message } = eventJSON.data
+      const {
+        id,
+        message
+      } = eventJSON.data
 
       if (id === activeChat) {
-        const newMessages = { ...messages }
+        const newMessages = {
+          ...messages
+        }
         newMessages[message.created] = message
         setMessages(newMessages)
       }
 
       props.onNewMessage && props.onNewMessage(id, message)
     } else if (eventJSON.action === 'edit_message') {
-      const { id, message } = eventJSON.data
+      const {
+        id,
+        message
+      } = eventJSON.data
 
       if (id === activeChat) {
         messages[message.created] = message
@@ -157,7 +176,10 @@ const SocketChild = (props) => {
 
       props.onEditMessage && props.onEditMessage(id, message)
     } else if (eventJSON.action === 'delete_message') {
-      const { id, message } = eventJSON.data
+      const {
+        id,
+        message
+      } = eventJSON.data
 
       if (id === activeChat) {
         messages[message.created] = undefined
@@ -166,8 +188,13 @@ const SocketChild = (props) => {
 
       props.onDeleteMessage && props.onDeleteMessage(id, message)
     } else if (eventJSON.action === 'is_typing') {
-      const { id, person } = eventJSON.data
-      let newTypingCounter = { ...typingCounter }
+      const {
+        id,
+        person
+      } = eventJSON.data
+      let newTypingCounter = {
+        ...typingCounter
+      }
       newTypingCounter = {
         ...newTypingCounter,
         [id]: {
@@ -186,21 +213,42 @@ const SocketChild = (props) => {
     props.reRender && props.reRender()
   }
 
-  const { development, publicKey, projectID, chatID, chatAccessKey } = props
+  const {
+    development,
+    publicKey,
+    projectID,
+    chatID,
+    chatAccessKey
+  } = props
   const wsStart = development ? 'ws://' : 'wss://'
   const rootHost = development ? '127.0.0.1:8000' : 'api.chatengine.io'
   const project = publicKey ? publicKey : projectID
 
-  return (
-    <WebSocket
-      reconnect={true}
-      childRef={(ref) => (socketRef = ref)}
-      url={`${wsStart}${rootHost}/chat/?projectID=${project}&chatID=${chatID}&accessKey=${chatAccessKey}`}
-      onOpen={onConnect.bind(this, props)}
-      onClose={onClose.bind(this)}
-      onError={(e) => console.log('Socket Error', e)}
-      onMessage={handleEvent.bind(this)}
-      reconnectIntervalInMilliSeconds={3000}
+  return ( <
+    WebSocket reconnect = {
+      true
+    }
+    childRef = {
+      (ref) => (socketRef = ref)
+    }
+    url = {
+      `${wsStart}${rootHost}/chat/?projectID=${project}&chatID=${chatID}&accessKey=${chatAccessKey}`
+    }
+    onOpen = {
+      onConnect.bind(this, props)
+    }
+    onClose = {
+      onClose.bind(this)
+    }
+    onError = {
+      (e) => console.log('Socket Error', e)
+    }
+    onMessage = {
+      handleEvent.bind(this)
+    }
+    reconnectIntervalInMilliSeconds = {
+      3000
+    }
     />
   )
 }

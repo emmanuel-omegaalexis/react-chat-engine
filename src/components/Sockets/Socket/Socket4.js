@@ -82,7 +82,7 @@ const Socket = (props) => {
       conn.renderChatFeed ||
       conn.renderChatList
     ) {
-      console.log('Refresh')
+      // console.log('Refresh')
       getLatestChats(conn, 25, (chats) => setChats(_.mapKeys(chats, 'id')))
       getLatestMessages(conn, activeChat, 45, (id, list) => {
         setMessages({ ...messages, ..._.mapKeys(list, 'created') })
@@ -103,7 +103,6 @@ const Socket = (props) => {
 
   async function handleEvent(event) {
     const eventJSON = JSON.parse(event)
-    console.log('eventJSON.action', eventJSON.action)
     if (eventJSON.action === 'pong') {
       setShouldPongBy(Date.now() + minLag)
     } else if (eventJSON.action === 'login_error') {
