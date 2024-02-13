@@ -194,7 +194,7 @@ const Socket = (props) => {
       onOpen={onConnect}
       onError={(e) => console.log('Socket Error', e)}
       onMessage={handleEvent.bind(this)}
-      onClose={() => console.log('Socket Closed')}
+      onClose={() => console.log('Socket Closed One')}
     />
   )
 }
