@@ -101,21 +101,21 @@ const Socket = (props) => {
     props.onEditChat && props.onEditChat(chat)
   }
 
-  function onSocketChange(isClosed) {
-    const key = `${props.projectID}/${props.userName}/socketclosed`
+  // function onSocketChange(isClosed) {
+  //   const key = `${props.projectID}/${props.userName}/socketclosed`
 
-    if (isClosed) {
-      console.log('Socket Closed One1')
+  //   if (isClosed) {
+  //     console.log('Socket Closed One1')
       
-      localStorage.setItem(key, isClosed)
+  //     localStorage.setItem(key, isClosed)
       
-    }
-    else if(!isClosed){
-      onConnect()
-      console.log('Socket Open')
-      localStorage.setItem(key, !isClosed)
-    }
-  }
+  //   }
+  //   else if(!isClosed){
+  //     onConnect()
+  //     console.log('Socket Open')
+  //     localStorage.setItem(key, !isClosed)
+  //   }
+  // }
 
   async function handleEvent(event) {
     const eventJSON = JSON.parse(event)
