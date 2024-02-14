@@ -1,8 +1,4 @@
-import React, {
-  useContext,
-  useState,
-  useEffect
-} from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 
 import {
   ChatEngineContext,
@@ -10,13 +6,9 @@ import {
   getLatestChats,
   getLatestMessages
 } from 'react-chat-engine'
-import {
-  getDateTime
-} from '../../ChatEngine/Utilities/timezone'
+import { getDateTime } from '../../ChatEngine/Utilities/timezone'
 
-import {
-  WebSocket
-} from 'nextjs-websocket'
+import { WebSocket } from 'nextjs-websocket'
 
 let socketRef = undefined
 let pingIntervalID = 0
@@ -64,12 +56,12 @@ const Socket = (props) => {
 
   function sortChats(chats) {
     return Object.values(chats).sort((a, b) => {
-      const aDate = a.last_message.created ?
-        getDateTime(a.last_message.created, props.offset) :
-        getDateTime(a.created, props.offset)
-      const bDate = b.last_message.created ?
-        getDateTime(b.last_message.created, props.offset) :
-        getDateTime(b.created, props.offset)
+      const aDate = a.last_message.created
+        ? getDateTime(a.last_message.created, props.offset)
+        : getDateTime(a.created, props.offset)
+      const bDate = b.last_message.created
+        ? getDateTime(b.last_message.created, props.offset)
+        : getDateTime(b.created, props.offset)
       return new Date(bDate) - new Date(aDate)
     })
   }
@@ -93,10 +85,7 @@ const Socket = (props) => {
       // console.log('Refresh')
       getLatestChats(conn, 25, (chats) => setChats(_.mapKeys(chats, 'id')))
       getLatestMessages(conn, activeChat, 45, (id, list) => {
-        setMessages({
-          ...messages,
-          ..._.mapKeys(list, 'created')
-        })
+        setMessages({ ...messages, ..._.mapKeys(list, 'created') })
       })
     }
 
@@ -105,9 +94,7 @@ const Socket = (props) => {
 
   function handleEditChat(chat) {
     if (chats) {
-      const newChats = {
-        ...chats
-      }
+      const newChats = { ...chats }
       newChats[chat.id] = chat
       setChats(newChats)
     }
@@ -115,8 +102,19 @@ const Socket = (props) => {
   }
 
   function onSocketChange(isClosed) {
-    console.log('Socket Closed One1')
-    // props.onSocketChange(true)
+    const key = `${props.projectID}/${props.userName}/socketclosed`
+
+    if (isClosed) {
+      console.log('Socket Closed One1')
+      
+      localStorage.setItem(key, isClosed)
+      
+    }
+    else if(!isClosed){
+      onConnect()
+      console.log('Socket Open')
+      localStorage.setItem(key, !isClosed)
+    }
   }
 
   async function handleEvent(event) {
@@ -130,9 +128,7 @@ const Socket = (props) => {
     } else if (eventJSON.action === 'new_chat') {
       const chat = eventJSON.data
       if (chats) {
-        const newChats = {
-          ...chats
-        }
+        const newChats = { ...chats }
         newChats[chat.id] = chat
         setChats(newChats)
         setActiveChat(chat.id)
@@ -158,14 +154,9 @@ const Socket = (props) => {
       handleEditChat(eventJSON.data)
       props.onRemovePerson && props.onRemovePerson(eventJSON.data)
     } else if (eventJSON.action === 'new_message') {
-      const {
-        id,
-        message
-      } = eventJSON.data
+      const { id, message } = eventJSON.data
       if (parseInt(id) === parseInt(activeChat)) {
-        const newMessages = {
-          ...messages
-        }
+        const newMessages = { ...messages }
         newMessages[message.created] = message
         setMessages(newMessages)
       }
@@ -176,33 +167,22 @@ const Socket = (props) => {
       }
       props.onNewMessage && props.onNewMessage(id, message)
     } else if (eventJSON.action === 'edit_message') {
-      const {
-        id,
-        message
-      } = eventJSON.data
+      const { id, message } = eventJSON.data
       if (id === activeChat) {
         messages[message.created] = message
         setMessages(messages)
       }
       props.onEditMessage && props.onEditMessage(id, message)
     } else if (eventJSON.action === 'delete_message') {
-      const {
-        id,
-        message
-      } = eventJSON.data
+      const { id, message } = eventJSON.data
       if (id === activeChat) {
         messages[message.created] = undefined
         setMessages(messages)
       }
       props.onDeleteMessage && props.onDeleteMessage(id, message)
     } else if (eventJSON.action === 'is_typing') {
-      const {
-        id,
-        person
-      } = eventJSON.data
-      let newTypingCounter = {
-        ...typingCounter
-      }
+      const { id, person } = eventJSON.data
+      let newTypingCounter = { ...typingCounter }
       newTypingCounter = {
         ...newTypingCounter,
         [id]: {
@@ -215,41 +195,24 @@ const Socket = (props) => {
     }
   }
 
-  const {
-    development
-  } = props
+  const { development } = props
   const wsStart = development ? 'ws://' : 'wss://'
   const rootHost = development ? '127.0.0.1:8000' : 'api.chatengine.io'
 
-  if (!sessionToken || sessionToken === '') return <div / >
+  if (!sessionToken || sessionToken === '') return <div />
 
-    return ( <
-      WebSocket url = {
-        `${wsStart}${rootHost}/person_v4/?session_token=${sessionToken}`
-      }
-      reconnect = {
-        true
-      }
-      reconnectIntervalInMilliSeconds = {
-        3000
-      }
-      childRef = {
-        (ref) => (socketRef = ref)
-      }
-      onOpen = {
-        onConnect
-      }
-      onError = {
-        (e) => console.log('Socket Error', e)
-      }
-      onMessage = {
-        handleEvent.bind(this)
-      }
-      onClose = {
-        onSocketChange(true)
-      }
-      />
-    )
+  return (
+    <WebSocket
+      url={`${wsStart}${rootHost}/person_v4/?session_token=${sessionToken}`}
+      reconnect={true}
+      reconnectIntervalInMilliSeconds={3000}
+      childRef={(ref) => (socketRef = ref)}
+      onOpen={onSocketChange(false)}
+      onError={(e) => console.log('Socket Error', e)}
+      onMessage={handleEvent.bind(this)}
+      onClose={onSocketChange(true)}
+    />
+  )
 }
 
 export default Socket
