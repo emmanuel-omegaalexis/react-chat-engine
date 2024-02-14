@@ -210,7 +210,7 @@ const Socket = (props) => {
       onOpen={() => {
         onConnect()
         localStorage.setItem(
-        `${props.projectID}/${props.userName}/socketclosed`,
+        `${props.projectID}/${props.userName}/socketstatus`,
         'open'
       )} }
       onError={(e) => console.log('Socket Error', e)}
@@ -218,10 +218,9 @@ const Socket = (props) => {
       // onClose={onSocketChange(true)}
       onClose={() => {
         localStorage.setItem(
-          `${props.projectID}/${props.userName}/socketclosed`,
+          `${props.projectID}/${props.userName}/socketstatus`,
           'closed'
         )
-        console.log('Socket Closed 4')
       }}
     />
   )
