@@ -211,7 +211,13 @@ const Socket = (props) => {
       onError={(e) => console.log('Socket Error', e)}
       onMessage={handleEvent.bind(this)}
       // onClose={onSocketChange(true)}
-      onClose={() => { console.log('Socket Closed') localStorage.setItem(`${props.projectID}/${props.userName}/socketclosed`, 'closed') }}
+      onClose={() => {
+        localStorage.setItem(
+          `${props.projectID}/${props.userName}/socketclosed`,
+          'closed'
+        )
+        console.log('Socket Closed 2')
+      }}
     />
   )
 }
