@@ -207,10 +207,11 @@ const Socket = (props) => {
       reconnect={true}
       reconnectIntervalInMilliSeconds={3000}
       childRef={(ref) => (socketRef = ref)}
-      onOpen={onSocketChange(false)}
+      onOpen={onConnect}
       onError={(e) => console.log('Socket Error', e)}
       onMessage={handleEvent.bind(this)}
-      onClose={onSocketChange(true)}
+      // onClose={onSocketChange(true)}
+      onClose={() => { console.log('Socket Closed') localStorage.setItem(`${props.projectID}/${props.userName}/socketclosed`, 'closed') }}
     />
   )
 }
