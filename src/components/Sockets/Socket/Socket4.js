@@ -101,6 +101,11 @@ const Socket = (props) => {
     props.onEditChat && props.onEditChat(chat)
   }
 
+  async function onSocketChange(isClosed) {
+    console.log('Socket Closed One1')
+    props.onSocketChange(true)
+  }
+
   async function handleEvent(event) {
     const eventJSON = JSON.parse(event)
     if (eventJSON.action === 'pong') {
@@ -194,7 +199,7 @@ const Socket = (props) => {
       onOpen={onConnect}
       onError={(e) => console.log('Socket Error', e)}
       onMessage={handleEvent.bind(this)}
-      onClose={() => console.log('Socket Closed One')}
+      onClose={onSocketChange(true)}
     />
   )
 }
