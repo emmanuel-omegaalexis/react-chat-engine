@@ -332,13 +332,19 @@ var Socket = function Socket(props) {
     childRef: function childRef(ref) {
       return socketRef = ref;
     },
-    onOpen: onConnect,
+    onOpen: function onOpen() {
+      console.log('Peanut', 'Socket Open');
+      onConnect();
+      localStorage.setItem(props.projectID + "/" + props.userName + "/socketstatus", 'open');
+    },
     onError: function onError(e) {
       return console.log('Socket Error', e);
     },
     onMessage: handleEvent.bind(_this),
     onClose: function onClose() {
-      return console.log('Socket Closed');
+      console.log('Peanut', 'Socket Closed');
+      localStorage.setItem(props.projectID + "/" + props.userName + "/socketstatus", 'closed');
+      console.log('Peanut', 'End Socket Closed');
     }
   });
 };
@@ -406,7 +412,6 @@ var Socket$1 = function Socket$1(props) {
       setConn(props);
       setCreds(props);
       setSessionToken(localStorage.getItem(sessionKey));
-      console.log('Local fetch!');
       return;
     }
 
@@ -475,8 +480,6 @@ var SocketChild = function SocketChild(props) {
 
   useEffect(function () {
     if (now > shouldPongBy) {
-      console.log('shouldPongBy', shouldPongBy);
-      console.log('now', now);
       props.reRender && props.reRender();
       setShouldPongBy(Date.now() + minLag$1);
     }

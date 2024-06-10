@@ -208,6 +208,7 @@ const Socket = (props) => {
       reconnectIntervalInMilliSeconds={3000}
       childRef={(ref) => (socketRef = ref)}
       onOpen={() => {
+        console.log('Peanut', 'Socket Open')
         onConnect()
         localStorage.setItem(
         `${props.projectID}/${props.userName}/socketstatus`,
@@ -217,10 +218,12 @@ const Socket = (props) => {
       onMessage={handleEvent.bind(this)}
       // onClose={onSocketChange(true)}
       onClose={() => {
+        console.log('Peanut', 'Socket Closed')
         localStorage.setItem(
           `${props.projectID}/${props.userName}/socketstatus`,
           'closed'
         )
+        console.log('Peanut', 'End Socket Closed')
       }}
     />
   )
