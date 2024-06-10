@@ -336,9 +336,9 @@ var Socket = function Socket(props) {
       return socketRef = ref;
     },
     onOpen: function onOpen() {
-      console.log('Peanut', 'Socket Open');
       onConnect();
       localStorage.setItem(props.projectID + "/" + props.userName + "/socketstatus", 'open');
+      console.log('Peanut', 'Socket Open');
     },
     onError: function onError(e) {
       return console.log('Socket Error', e);
