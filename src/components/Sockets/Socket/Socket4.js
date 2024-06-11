@@ -101,22 +101,6 @@ const Socket = (props) => {
     props.onEditChat && props.onEditChat(chat)
   }
 
-  // function onSocketChange(isClosed) {
-  //   const key = `${props.projectID}/${props.userName}/socketclosed`
-
-  //   if (isClosed) {
-  //     console.log('Socket Closed One1')
-      
-  //     localStorage.setItem(key, isClosed)
-      
-  //   }
-  //   else if(!isClosed){
-  //     onConnect()
-  //     console.log('Socket Open')
-  //     localStorage.setItem(key, !isClosed)
-  //   }
-  // }
-
   async function handleEvent(event) {
     const eventJSON = JSON.parse(event)
     if (eventJSON.action === 'pong') {
@@ -225,6 +209,8 @@ const Socket = (props) => {
         )
         console.log('Peanut', 'End Socket Closed')
       }}
+      debug={true}
+      reconnect={true}
     />
   )
 }

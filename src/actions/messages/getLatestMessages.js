@@ -17,6 +17,6 @@ export function getLatestMessages(props, chatId, count, callback) {
     })
     
     .catch((error) => {
-        console.log('Fetch Latest Messages Error', error)
+        // console.log('Fetch Latest Messages Error', error)
     });
 }

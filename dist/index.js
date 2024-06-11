@@ -14,41 +14,32 @@ var reactScroll = require('react-scroll');
 var ChatEngineContext = React.createContext();
 var ChatEngineWrapper = function ChatEngineWrapper(props) {
   var _useState = React.useState(null),
-      conn = _useState[0],
-      setConn = _useState[1];
-
+    conn = _useState[0],
+    setConn = _useState[1];
   var _useState2 = React.useState(null),
-      creds = _useState2[0],
-      setCreds = _useState2[1];
-
+    creds = _useState2[0],
+    setCreds = _useState2[1];
   var _useState3 = React.useState(''),
-      sessionToken = _useState3[0],
-      setSessionToken = _useState3[1];
-
+    sessionToken = _useState3[0],
+    setSessionToken = _useState3[1];
   var _useState4 = React.useState(null),
-      chats = _useState4[0],
-      setChats = _useState4[1];
-
+    chats = _useState4[0],
+    setChats = _useState4[1];
   var _useState5 = React.useState({}),
-      messages = _useState5[0],
-      setMessages = _useState5[1];
-
+    messages = _useState5[0],
+    setMessages = _useState5[1];
   var _useState6 = React.useState(null),
-      activeChat = _useState6[0],
-      setActiveChat = _useState6[1];
-
+    activeChat = _useState6[0],
+    setActiveChat = _useState6[1];
   var _useState7 = React.useState({}),
-      typingCounter = _useState7[0],
-      setTypingCounter = _useState7[1];
-
+    typingCounter = _useState7[0],
+    setTypingCounter = _useState7[1];
   var _useState8 = React.useState(false),
-      loadMoreMessages = _useState8[0],
-      setLoadMoreMessages = _useState8[1];
-
+    loadMoreMessages = _useState8[0],
+    setLoadMoreMessages = _useState8[1];
   var _useState9 = React.useState(false),
-      isBottomVisible = _useState9[0],
-      setIsBottomVisible = _useState9[1];
-
+    isBottomVisible = _useState9[0],
+    setIsBottomVisible = _useState9[1];
   var value = {
     conn: conn,
     setConn: setConn,
@@ -75,52 +66,30 @@ var ChatEngineWrapper = function ChatEngineWrapper(props) {
 };
 
 function _extends() {
-  _extends = Object.assign || function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
+  return _extends = Object.assign ? Object.assign.bind() : function (n) {
+    for (var e = 1; e < arguments.length; e++) {
+      var t = arguments[e];
+      for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
     }
-
-    return target;
-  };
-
-  return _extends.apply(this, arguments);
+    return n;
+  }, _extends.apply(null, arguments);
 }
-
-function _inheritsLoose(subClass, superClass) {
-  subClass.prototype = Object.create(superClass.prototype);
-  subClass.prototype.constructor = subClass;
-
-  _setPrototypeOf(subClass, superClass);
+function _inheritsLoose(t, o) {
+  t.prototype = Object.create(o.prototype), t.prototype.constructor = t, _setPrototypeOf(t, o);
 }
-
-function _setPrototypeOf(o, p) {
-  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  };
-
-  return _setPrototypeOf(o, p);
-}
-
-function _objectWithoutPropertiesLoose(source, excluded) {
-  if (source == null) return {};
-  var target = {};
-  var sourceKeys = Object.keys(source);
-  var key, i;
-
-  for (i = 0; i < sourceKeys.length; i++) {
-    key = sourceKeys[i];
-    if (excluded.indexOf(key) >= 0) continue;
-    target[key] = source[key];
+function _objectWithoutPropertiesLoose(r, e) {
+  if (null == r) return {};
+  var t = {};
+  for (var n in r) if ({}.hasOwnProperty.call(r, n)) {
+    if (e.indexOf(n) >= 0) continue;
+    t[n] = r[n];
   }
-
-  return target;
+  return t;
+}
+function _setPrototypeOf(t, e) {
+  return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) {
+    return t.__proto__ = e, t;
+  }, _setPrototypeOf(t, e);
 }
 
 function getDateTime(date, offset) {
@@ -160,12 +129,11 @@ var pingIntervalID = 0;
 var timeIntervalID = 0;
 var minLag = 15 * 1000;
 var initialLoadTime = Date.now() + 10 * 1000;
-
 var Socket = function Socket(props) {
+  var _React$createElement;
   var handleEvent = function handleEvent(event) {
     try {
       var eventJSON = JSON.parse(event);
-
       if (eventJSON.action === 'pong') {
         setShouldPongBy(Date.now() + minLag);
       } else if (eventJSON.action === 'login_error') {
@@ -174,31 +142,25 @@ var Socket = function Socket(props) {
         props.onFailAuth && props.onFailAuth(conn);
       } else if (eventJSON.action === 'new_chat') {
         var chat = eventJSON.data;
-
         if (chats) {
           var newChats = _extends({}, chats);
-
           newChats[chat.id] = chat;
           setChats(newChats);
           setActiveChat(chat.id);
         }
-
         props.onNewChat && props.onNewChat(eventJSON.data);
       } else if (eventJSON.action === 'edit_chat') {
         handleEditChat(eventJSON.data);
       } else if (eventJSON.action === 'delete_chat') {
         var _chat = eventJSON.data;
-
         if (chats) {
           chats[_chat.id] = undefined;
           setChats(chats);
-
           if (!_.isEmpty(chats)) {
             var sortedChats = sortChats(chats);
             setActiveChat(sortedChats[0] ? parseInt(sortedChats[0].id) : 0);
           }
         }
-
         props.onDeleteChat && props.onDeleteChat(_chat);
       } else if (eventJSON.action === 'add_person') {
         handleEditChat(eventJSON.data);
@@ -208,90 +170,73 @@ var Socket = function Socket(props) {
         props.onRemovePerson && props.onRemovePerson(eventJSON.data);
       } else if (eventJSON.action === 'new_message') {
         var _eventJSON$data = eventJSON.data,
-            id = _eventJSON$data.id,
-            message = _eventJSON$data.message;
-
+          id = _eventJSON$data.id,
+          message = _eventJSON$data.message;
         if (parseInt(id) === parseInt(activeChat)) {
           var newMessages = _extends({}, messages);
-
           newMessages[message.created] = message;
           setMessages(newMessages);
         }
-
         if (message.sender_username !== props.userName && isBottomVisible) {
           reactChatEngine.readMessage(conn, activeChat, message.id, function (chat) {
             return handleEditChat(chat);
           });
         }
-
         props.onNewMessage && props.onNewMessage(id, message);
       } else if (eventJSON.action === 'edit_message') {
         var _eventJSON$data2 = eventJSON.data,
-            _id = _eventJSON$data2.id,
-            _message = _eventJSON$data2.message;
-
+          _id = _eventJSON$data2.id,
+          _message = _eventJSON$data2.message;
         if (_id === activeChat) {
           messages[_message.created] = _message;
           setMessages(messages);
         }
-
         props.onEditMessage && props.onEditMessage(_id, _message);
       } else if (eventJSON.action === 'delete_message') {
         var _eventJSON$data3 = eventJSON.data,
-            _id2 = _eventJSON$data3.id,
-            _message2 = _eventJSON$data3.message;
-
+          _id2 = _eventJSON$data3.id,
+          _message2 = _eventJSON$data3.message;
         if (_id2 === activeChat) {
           messages[_message2.created] = undefined;
           setMessages(messages);
         }
-
         props.onDeleteMessage && props.onDeleteMessage(_id2, _message2);
       } else if (eventJSON.action === 'is_typing') {
         var _extends2, _extends3;
-
         var _eventJSON$data4 = eventJSON.data,
-            _id3 = _eventJSON$data4.id,
-            person = _eventJSON$data4.person;
-
+          _id3 = _eventJSON$data4.id,
+          person = _eventJSON$data4.person;
         var newTypingCounter = _extends({}, typingCounter);
-
         newTypingCounter = _extends({}, newTypingCounter, (_extends3 = {}, _extends3[_id3] = _extends({}, newTypingCounter[_id3], (_extends2 = {}, _extends2[person] = Date.now(), _extends2)), _extends3));
         setTypingCounter(newTypingCounter);
         props.onTyping && props.onTyping(_id3, person);
       }
-
       return Promise.resolve();
     } catch (e) {
       return Promise.reject(e);
     }
   };
-
   var _useState = React.useState(Date.now());
-
   var _useState2 = React.useState(Date.now() + minLag),
-      setShouldPongBy = _useState2[1];
-
+    setShouldPongBy = _useState2[1];
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      conn = _useContext.conn,
-      sessionToken = _useContext.sessionToken,
-      chats = _useContext.chats,
-      setChats = _useContext.setChats,
-      messages = _useContext.messages,
-      setMessages = _useContext.setMessages,
-      activeChat = _useContext.activeChat,
-      setActiveChat = _useContext.setActiveChat,
-      typingCounter = _useContext.typingCounter,
-      setTypingCounter = _useContext.setTypingCounter,
-      isBottomVisible = _useContext.isBottomVisible;
-
+    conn = _useContext.conn,
+    sessionToken = _useContext.sessionToken,
+    chats = _useContext.chats,
+    setChats = _useContext.setChats,
+    messages = _useContext.messages,
+    setMessages = _useContext.setMessages,
+    activeChat = _useContext.activeChat,
+    setActiveChat = _useContext.setActiveChat,
+    typingCounter = _useContext.typingCounter,
+    setTypingCounter = _useContext.setTypingCounter,
+    isBottomVisible = _useContext.isBottomVisible;
   React.useEffect(function () {
     return function () {
       clearInterval(pingIntervalID);
       clearInterval(timeIntervalID);
     };
   }, []);
-
   function sortChats(chats) {
     return Object.values(chats).sort(function (a, b) {
       var aDate = a.last_message.created ? getDateTime(a.last_message.created, props.offset) : getDateTime(a.created, props.offset);
@@ -299,7 +244,6 @@ var Socket = function Socket(props) {
       return new Date(bDate) - new Date(aDate);
     });
   }
-
   function onConnect() {
     if (Date.now() > initialLoadTime || conn.renderChatFeed || conn.renderChatList) {
       reactChatEngine.getLatestChats(conn, 25, function (chats) {
@@ -309,26 +253,21 @@ var Socket = function Socket(props) {
         setMessages(_extends({}, messages, _.mapKeys(list, 'created')));
       });
     }
-
     props.onConnect && props.onConnect(conn);
   }
-
   function handleEditChat(chat) {
     if (chats) {
       var newChats = _extends({}, chats);
-
       newChats[chat.id] = chat;
       setChats(newChats);
     }
-
     props.onEditChat && props.onEditChat(chat);
   }
-
   var development = props.development;
   var wsStart = development ? 'ws://' : 'wss://';
   var rootHost = development ? '127.0.0.1:8000' : 'api.chatengine.io';
   if (!sessionToken || sessionToken === '') return /*#__PURE__*/React__default.createElement("div", null);
-  return /*#__PURE__*/React__default.createElement(nextjsWebsocket.WebSocket, {
+  return /*#__PURE__*/React__default.createElement(nextjsWebsocket.WebSocket, (_React$createElement = {
     url: "" + wsStart + rootHost + "/person_v4/?session_token=" + sessionToken,
     reconnect: true,
     reconnectIntervalInMilliSeconds: 3000,
@@ -336,9 +275,9 @@ var Socket = function Socket(props) {
       return socketRef = ref;
     },
     onOpen: function onOpen() {
+      console.log('Peanut', 'Socket Open');
       onConnect();
       localStorage.setItem(props.projectID + "/" + props.userName + "/socketstatus", 'open');
-      console.log('Peanut', 'Socket Open');
     },
     onError: function onError(e) {
       return console.log('Socket Error', e);
@@ -348,15 +287,15 @@ var Socket = function Socket(props) {
       console.log('Peanut', 'Socket Closed');
       localStorage.setItem(props.projectID + "/" + props.userName + "/socketstatus", 'closed');
       console.log('Peanut', 'End Socket Closed');
-    }
-  });
+    },
+    debug: true
+  }, _React$createElement["reconnect"] = true, _React$createElement));
 };
 
 function getApiUrl(props) {
   if (props && props.development) {
     return 'http://127.0.0.1:8000';
   }
-
   return 'https://api.chatengine.io';
 }
 
@@ -391,33 +330,27 @@ function getOrCreateSession(props, callback, errorFunc) {
 
 var Socket$1 = function Socket$1(props) {
   var didMountRef = React.useRef(false);
-
   var _useState = React.useState(false),
-      isHidden = _useState[0],
-      setIsHidden = _useState[1];
-
+    isHidden = _useState[0],
+    setIsHidden = _useState[1];
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      setConn = _useContext.setConn,
-      setCreds = _useContext.setCreds,
-      setSessionToken = _useContext.setSessionToken;
-
+    setConn = _useContext.setConn,
+    setCreds = _useContext.setCreds,
+    setSessionToken = _useContext.setSessionToken;
   React.useEffect(function () {
     if (!didMountRef.current) {
       didMountRef.current = true;
       getSession();
     }
   });
-
   function getSession() {
     var sessionKey = props.projectID + "/" + props.userName + "/" + props.userSecret;
-
     if (localStorage.getItem(sessionKey) !== null) {
       setConn(props);
       setCreds(props);
       setSessionToken(localStorage.getItem(sessionKey));
       return;
     }
-
     getOrCreateSession(props, function (data) {
       setConn(props);
       setCreds(props);
@@ -431,20 +364,17 @@ var Socket$1 = function Socket$1(props) {
         localStorage.removeItem(sessionKey);
         props.onFailAuth && props.onFailAuth(props);
       }
-
       setTimeout(function () {
         return getSession();
       }, 10 * 1000);
     });
   }
-
   function _reRender() {
     setIsHidden(true);
     setTimeout(function () {
       return setIsHidden(false);
     }, 100);
   }
-
   if (isHidden) return /*#__PURE__*/React__default.createElement("div", null);
   return /*#__PURE__*/React__default.createElement(Socket, _extends({}, props, {
     reRender: function reRender() {
@@ -459,28 +389,24 @@ var pingIntervalID$1 = 0;
 var timeIntervalID$1 = 0;
 var minLag$1 = 15 * 1000;
 var reconnect = Date.now() + 10 * 1000;
-
 var SocketChild = function SocketChild(props) {
   var _useState = React.useState(Date.now()),
-      now = _useState[0];
-
+    now = _useState[0];
   var _useState2 = React.useState(Date.now() + minLag$1),
-      shouldPongBy = _useState2[0],
-      setShouldPongBy = _useState2[1];
-
+    shouldPongBy = _useState2[0],
+    setShouldPongBy = _useState2[1];
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      conn = _useContext.conn,
-      setConn = _useContext.setConn,
-      setCreds = _useContext.setCreds,
-      chats = _useContext.chats,
-      setChats = _useContext.setChats,
-      messages = _useContext.messages,
-      setMessages = _useContext.setMessages,
-      activeChat = _useContext.activeChat,
-      setActiveChat = _useContext.setActiveChat,
-      typingCounter = _useContext.typingCounter,
-      setTypingCounter = _useContext.setTypingCounter;
-
+    conn = _useContext.conn,
+    setConn = _useContext.setConn,
+    setCreds = _useContext.setCreds,
+    chats = _useContext.chats,
+    setChats = _useContext.setChats,
+    messages = _useContext.messages,
+    setMessages = _useContext.setMessages,
+    activeChat = _useContext.activeChat,
+    setActiveChat = _useContext.setActiveChat,
+    typingCounter = _useContext.typingCounter,
+    setTypingCounter = _useContext.setTypingCounter;
   React.useEffect(function () {
     if (now > shouldPongBy) {
       props.reRender && props.reRender();
@@ -493,45 +419,35 @@ var SocketChild = function SocketChild(props) {
       clearInterval(timeIntervalID$1);
     };
   }, []);
-
   function onEditChat(chat) {
     if (chats) {
       var newChats = _extends({}, chats);
-
       newChats[chat.id] = chat;
       setChats(newChats);
     }
-
     props.onEditChat && props.onEditChat(chat);
   }
-
   function onGetChat(chat) {
     if (activeChat === null) {
       setActiveChat(chat.id);
     }
-
     setChats(_$1.mapKeys([chat], 'id'));
   }
-
   function onConnect(conn) {
     setConn(conn);
     setCreds(conn);
     reactChatEngine.getChat(conn, props.chatID, function (chat) {
       return onGetChat(chat);
     });
-
     if (Date.now() > reconnect) {
       reactChatEngine.getLatestMessages(conn, props.chatID, 45, function (id, list) {
         setMessages(_extends({}, messages, _$1.mapKeys(list, 'created')));
       });
     }
-
     props.onConnect && props.onConnect(conn);
   }
-
   function handleEvent(event) {
     var eventJSON = JSON.parse(event);
-
     if (eventJSON.action === 'pong') {
       setShouldPongBy(Date.now() + minLag$1);
     } else if (eventJSON.action === 'login_error') {
@@ -543,12 +459,10 @@ var SocketChild = function SocketChild(props) {
       onEditChat(eventJSON.data);
     } else if (eventJSON.action === 'delete_chat') {
       var chat = eventJSON.data;
-
       if (chats) {
         chats[chat.id] = undefined;
         setChats(chats);
       }
-
       props.onDeleteChat && props.onDeleteChat(chat);
     } else if (eventJSON.action === 'add_person') {
       onEditChat(eventJSON.data);
@@ -558,63 +472,51 @@ var SocketChild = function SocketChild(props) {
       props.onRemovePerson && props.onRemovePerson(eventJSON.data);
     } else if (eventJSON.action === 'new_message') {
       var _eventJSON$data = eventJSON.data,
-          id = _eventJSON$data.id,
-          message = _eventJSON$data.message;
-
+        id = _eventJSON$data.id,
+        message = _eventJSON$data.message;
       if (id === activeChat) {
         var newMessages = _extends({}, messages);
-
         newMessages[message.created] = message;
         setMessages(newMessages);
       }
-
       props.onNewMessage && props.onNewMessage(id, message);
     } else if (eventJSON.action === 'edit_message') {
       var _eventJSON$data2 = eventJSON.data,
-          _id = _eventJSON$data2.id,
-          _message = _eventJSON$data2.message;
-
+        _id = _eventJSON$data2.id,
+        _message = _eventJSON$data2.message;
       if (_id === activeChat) {
         messages[_message.created] = _message;
         setMessages(messages);
       }
-
       props.onEditMessage && props.onEditMessage(_id, _message);
     } else if (eventJSON.action === 'delete_message') {
       var _eventJSON$data3 = eventJSON.data,
-          _id2 = _eventJSON$data3.id,
-          _message2 = _eventJSON$data3.message;
-
+        _id2 = _eventJSON$data3.id,
+        _message2 = _eventJSON$data3.message;
       if (_id2 === activeChat) {
         messages[_message2.created] = undefined;
         setMessages(messages);
       }
-
       props.onDeleteMessage && props.onDeleteMessage(_id2, _message2);
     } else if (eventJSON.action === 'is_typing') {
       var _extends2, _extends3;
-
       var _eventJSON$data4 = eventJSON.data,
-          _id3 = _eventJSON$data4.id,
-          person = _eventJSON$data4.person;
-
+        _id3 = _eventJSON$data4.id,
+        person = _eventJSON$data4.person;
       var newTypingCounter = _extends({}, typingCounter);
-
       newTypingCounter = _extends({}, newTypingCounter, (_extends3 = {}, _extends3[_id3] = _extends({}, newTypingCounter[_id3], (_extends2 = {}, _extends2[person] = Date.now(), _extends2)), _extends3));
       setTypingCounter(newTypingCounter);
       props.onTyping && props.onTyping(_id3, person);
     }
   }
-
   function onClose() {
     props.reRender && props.reRender();
   }
-
   var development = props.development,
-      publicKey = props.publicKey,
-      projectID = props.projectID,
-      chatID = props.chatID,
-      chatAccessKey = props.chatAccessKey;
+    publicKey = props.publicKey,
+    projectID = props.projectID,
+    chatID = props.chatID,
+    chatAccessKey = props.chatAccessKey;
   var wsStart = development ? 'ws://' : 'wss://';
   var rootHost = development ? '127.0.0.1:8000' : 'api.chatengine.io';
   var project = publicKey ? publicKey : projectID;
@@ -636,16 +538,14 @@ var SocketChild = function SocketChild(props) {
 
 var ChatSocket = function ChatSocket(props) {
   var _useState = React.useState(false),
-      hide = _useState[0],
-      setHide = _useState[1];
-
+    hide = _useState[0],
+    setHide = _useState[1];
   function _reRender() {
     setHide(true);
     setTimeout(function () {
       return setHide(false);
     }, 100);
   }
-
   return /*#__PURE__*/React__default.createElement("div", null, !hide && /*#__PURE__*/React__default.createElement(SocketChild, _extends({}, props, {
     reRender: function reRender() {
       return _reRender();
@@ -656,13 +556,11 @@ var ChatSocket = function ChatSocket(props) {
 var ChatLoader = function ChatLoader(props) {
   function useOnScreen(ref) {
     var _useState = React.useState(false),
-        isIntersecting = _useState[0],
-        setIntersecting = _useState[1];
-
+      isIntersecting = _useState[0],
+      setIntersecting = _useState[1];
     var observer = new IntersectionObserver(function (_ref) {
       var entry = _ref[0];
       setIntersecting(entry.isIntersecting);
-
       if (entry.isIntersecting) {
         props.onVisible();
       }
@@ -675,7 +573,6 @@ var ChatLoader = function ChatLoader(props) {
     }, []);
     return isIntersecting;
   }
-
   var ref = React.useRef();
   var isVisible = useOnScreen(ref);
   return /*#__PURE__*/React__default.createElement("div", {
@@ -696,26 +593,20 @@ var ChatLoader = function ChatLoader(props) {
 };
 
 var _this$2 = undefined;
-
 var NewChatForm = function NewChatForm(props) {
   var _useContext = React.useContext(ChatEngineContext),
-      conn = _useContext.conn;
-
+    conn = _useContext.conn;
   var _useState = React.useState(''),
-      value = _useState[0],
-      setValue = _useState[1];
-
+    value = _useState[0],
+    setValue = _useState[1];
   var _useState2 = React.useState(false),
-      selected = _useState2[0],
-      setSelected = _useState2[1];
-
+    selected = _useState2[0],
+    setSelected = _useState2[1];
   function _handleChange(event) {
     setValue(event.target.value);
   }
-
   function handleSubmit(event) {
     event.preventDefault();
-
     if (conn && value.trim().length > 0) {
       reactChatEngine.newChat(conn, {
         title: value
@@ -723,10 +614,8 @@ var NewChatForm = function NewChatForm(props) {
         return setSelected(false);
       });
     }
-
     setValue('');
   }
-
   return /*#__PURE__*/React__default.createElement("div", null, props.onClose && /*#__PURE__*/React__default.createElement("div", {
     style: {
       height: '0px'
@@ -834,7 +723,6 @@ var ChatCard = function ChatCard() {
     })
   })));
 };
-
 var styles$1 = {
   chatContainer: {
     padding: '16px',
@@ -865,27 +753,25 @@ var styles$1 = {
 
 function useBoop(_ref) {
   var _ref$x = _ref.x,
-      x = _ref$x === void 0 ? 0 : _ref$x,
-      _ref$y = _ref.y,
-      y = _ref$y === void 0 ? 0 : _ref$y,
-      _ref$rotation = _ref.rotation,
-      rotation = _ref$rotation === void 0 ? 0 : _ref$rotation,
-      _ref$scale = _ref.scale,
-      scale = _ref$scale === void 0 ? 1 : _ref$scale,
-      _ref$timing = _ref.timing,
-      timing = _ref$timing === void 0 ? 150 : _ref$timing,
-      _ref$springConfig = _ref.springConfig,
-      springConfig = _ref$springConfig === void 0 ? {
-    tension: 300,
-    friction: 10
-  } : _ref$springConfig,
-      _ref$width = _ref.width,
-      width = _ref$width === void 0 ? 'auto' : _ref$width;
-
+    x = _ref$x === void 0 ? 0 : _ref$x,
+    _ref$y = _ref.y,
+    y = _ref$y === void 0 ? 0 : _ref$y,
+    _ref$rotation = _ref.rotation,
+    rotation = _ref$rotation === void 0 ? 0 : _ref$rotation,
+    _ref$scale = _ref.scale,
+    scale = _ref$scale === void 0 ? 1 : _ref$scale,
+    _ref$timing = _ref.timing,
+    timing = _ref$timing === void 0 ? 150 : _ref$timing,
+    _ref$springConfig = _ref.springConfig,
+    springConfig = _ref$springConfig === void 0 ? {
+      tension: 300,
+      friction: 10
+    } : _ref$springConfig,
+    _ref$width = _ref.width,
+    width = _ref$width === void 0 ? 'auto' : _ref$width;
   var _React$useState = React__default.useState(false),
-      isBooped = _React$useState[0],
-      setIsBooped = _React$useState[1];
-
+    isBooped = _React$useState[0],
+    setIsBooped = _React$useState[1];
   var style = reactSpring.useSpring({
     display: 'inline-block',
     backfaceVisibility: 'hidden',
@@ -897,7 +783,6 @@ function useBoop(_ref) {
     if (!isBooped) {
       return;
     }
-
     var timeoutId = window.setTimeout(function () {
       setIsBooped(false);
     }, timing);
@@ -912,21 +797,17 @@ function useBoop(_ref) {
 }
 
 var _excluded = ["children", "triggers"];
-
 var Boop = function Boop(_ref) {
   var children = _ref.children,
-      _ref$triggers = _ref.triggers,
-      triggers = _ref$triggers === void 0 ? [] : _ref$triggers,
-      boopConfig = _objectWithoutPropertiesLoose(_ref, _excluded);
-
+    _ref$triggers = _ref.triggers,
+    triggers = _ref$triggers === void 0 ? [] : _ref$triggers,
+    boopConfig = _objectWithoutPropertiesLoose(_ref, _excluded);
   var _useBoop = useBoop(boopConfig),
-      style = _useBoop[0],
-      trigger = _useBoop[1];
-
+    style = _useBoop[0],
+    trigger = _useBoop[1];
   function isTriggerPresent(trigger) {
     return triggers.indexOf(trigger) !== -1;
   }
-
   return /*#__PURE__*/React__default.createElement(reactSpring.animated.span, {
     style: style,
     onClick: function onClick() {
@@ -942,16 +823,13 @@ var Boop = function Boop(_ref) {
 };
 
 var _require = require('html-to-text'),
-    htmlToText = _require.htmlToText;
-
+  htmlToText = _require.htmlToText;
 var ChatCard$1 = function ChatCard$1(props) {
   var chat = props.chat;
-
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      conn = _useContext.conn,
-      activeChat = _useContext.activeChat,
-      setActiveChat = _useContext.setActiveChat;
-
+    conn = _useContext.conn,
+    activeChat = _useContext.activeChat,
+    setActiveChat = _useContext.setActiveChat;
   if (_$1.isEmpty(chat) || props.loading) return /*#__PURE__*/React__default.createElement(ChatCard, null);
   if (!conn || conn === null) return /*#__PURE__*/React__default.createElement("div", null);
   var extraStyle = activeChat === chat.id ? styles$2.activeChat : {};
@@ -960,11 +838,9 @@ var ChatCard$1 = function ChatCard$1(props) {
   });
   var title = chat.is_direct_chat && otherPerson ? otherPerson.person.username : chat.title;
   var lastMessage = htmlToText(chat.last_message.text, {});
-
   if (!lastMessage) {
     lastMessage = chat.last_message.attachments.length > 0 ? chat.last_message.attachments.length + " image" + (chat.last_message.attachments.length > 1 ? 's' : '') : 'Say hello!';
   }
-
   function didReadLastMessage(chat) {
     var didReadLastMessage = true;
     chat.people.map(function (chat_person) {
@@ -974,12 +850,10 @@ var ChatCard$1 = function ChatCard$1(props) {
     });
     return didReadLastMessage;
   }
-
   function daySinceSent(date) {
     if (!date) return '';
     return getDateTime(date, conn.offset).toString().substr(4, 6);
   }
-
   return /*#__PURE__*/React__default.createElement(Boop, {
     triggers: ['onClick', 'onMouseEnter'],
     x: 3,
@@ -1028,7 +902,6 @@ var ChatCard$1 = function ChatCard$1(props) {
     })
   }, daySinceSent(chat.last_message.created)))));
 };
-
 var styles$2 = {
   chatContainer: {
     padding: '16px',
@@ -1057,24 +930,19 @@ var styles$2 = {
 };
 
 var interval = 33;
-
 var ChatList = function ChatList(props) {
   var didMountRef = React.useRef(false);
-
   var _useState = React.useState(false),
-      loadChats = _useState[0],
-      setLoadChats = _useState[1];
-
+    loadChats = _useState[0],
+    setLoadChats = _useState[1];
   var _useState2 = React.useState(true),
-      hasMoreChats = _useState2[0],
-      setHasMoreChats = _useState2[1];
-
+    hasMoreChats = _useState2[0],
+    setHasMoreChats = _useState2[1];
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      conn = _useContext.conn,
-      chats = _useContext.chats,
-      setChats = _useContext.setChats,
-      setActiveChat = _useContext.setActiveChat;
-
+    conn = _useContext.conn,
+    chats = _useContext.chats,
+    setChats = _useContext.setChats,
+    setActiveChat = _useContext.setActiveChat;
   var chatList = sortChats(chats ? Object.values(chats) : [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]);
   React.useEffect(function () {
     if (!didMountRef.current) {
@@ -1089,7 +957,6 @@ var ChatList = function ChatList(props) {
     if (!loadChats || loadChats === 'loading') return;
     setLoadChats('loading');
     var chatList = chats !== null ? sortChats(Object.values(chats)) : [];
-
     if (chatList.length > 0) {
       var before = chatList[chatList.length - 1].created;
       reactChatEngine.getChatsBefore(props, before, interval, function (chats) {
@@ -1097,7 +964,6 @@ var ChatList = function ChatList(props) {
       });
     }
   }, [loadChats]);
-
   function sortChats(chats) {
     return chats.sort(function (a, b) {
       var aDate = a.last_message && a.last_message.created ? getDateTime(a.last_message.created, props.offset) : getDateTime(a.created, props.offset);
@@ -1105,19 +971,14 @@ var ChatList = function ChatList(props) {
       return new Date(bDate) - new Date(aDate);
     });
   }
-
   function onGetChats(chatList) {
     setLoadChats(false);
     var oldChats = chats !== null ? chats : {};
-
     var newChats = _$1.mapKeys(_extends({}, chatList), 'id');
-
     var allChats = _extends({}, oldChats, newChats);
-
     setChats(allChats);
     interval > chatList.length && setHasMoreChats(false);
   }
-
   function renderChats(chats) {
     return chats.map(function (chat, index) {
       if (!chat) {
@@ -1140,7 +1001,6 @@ var ChatList = function ChatList(props) {
       }
     });
   }
-
   return /*#__PURE__*/React__default.createElement("div", {
     style: styles$3.chatListContainer,
     className: "ce-chat-list"
@@ -1161,7 +1021,6 @@ var ChatList = function ChatList(props) {
     }
   }))));
 };
-
 var styles$3 = {
   chatListContainer: {
     height: '100%',
@@ -1245,8 +1104,7 @@ var CreateChat = function CreateChat() {
 
 var IceBreaker = function IceBreaker() {
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      activeChat = _useContext.activeChat;
-
+    activeChat = _useContext.activeChat;
   var gifs = ['https://chat-engine-assets.s3.amazonaws.com/welcome_gifs/peace.gif', 'https://chat-engine-assets.s3.amazonaws.com/welcome_gifs/thumbsup.gif'];
   var gif = gifs[(activeChat ? activeChat : 0) % gifs.length];
   return /*#__PURE__*/React__default.createElement("div", {
@@ -1277,16 +1135,13 @@ var IceBreaker = function IceBreaker() {
 
 var RenderTrigger = function RenderTrigger(props) {
   var _useContext = React.useContext(ChatEngineContext);
-
   function useOnScreen(ref) {
     var _useState = React.useState(false),
-        isIntersecting = _useState[0],
-        setIntersecting = _useState[1];
-
+      isIntersecting = _useState[0],
+      setIntersecting = _useState[1];
     var observer = new IntersectionObserver(function (_ref) {
       var entry = _ref[0];
       setIntersecting(entry.isIntersecting);
-
       if (entry.isIntersecting) {
         props.onEnter && props.onEnter();
       } else {
@@ -1301,7 +1156,6 @@ var RenderTrigger = function RenderTrigger(props) {
     }, []);
     return isIntersecting;
   }
-
   var ref = React.useRef();
   var isVisible = useOnScreen(ref);
   return /*#__PURE__*/React__default.createElement("div", {
@@ -1312,13 +1166,10 @@ var RenderTrigger = function RenderTrigger(props) {
 
 var ChatListDrawer = function ChatListDrawer(props) {
   var _useState = React.useState(false),
-      isOpen = _useState[0],
-      setIsOpen = _useState[1];
-
+    isOpen = _useState[0],
+    setIsOpen = _useState[1];
   var context = React.useContext(ChatEngineContext);
-
   var allProps = _extends({}, props, context.conn);
-
   return /*#__PURE__*/React__default.createElement("div", null, /*#__PURE__*/React__default.createElement(icons.MenuOutlined, {
     onClick: function onClick() {
       return setIsOpen(true);
@@ -1693,12 +1544,14 @@ var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
 var ReactPropTypesSecret_1 = ReactPropTypesSecret;
 
+var has = Function.call.bind(Object.prototype.hasOwnProperty);
+
 var printWarning = function() {};
 
 if (process.env.NODE_ENV !== 'production') {
   var ReactPropTypesSecret$1 = ReactPropTypesSecret_1;
   var loggedTypeFailures = {};
-  var has = Function.call.bind(Object.prototype.hasOwnProperty);
+  var has$1 = has;
 
   printWarning = function(text) {
     var message = 'Warning: ' + text;
@@ -1710,7 +1563,7 @@ if (process.env.NODE_ENV !== 'production') {
       // This error was thrown as a convenience so that you can use this stack
       // to find the callsite that caused this warning to fire.
       throw new Error(message);
-    } catch (x) {}
+    } catch (x) { /**/ }
   };
 }
 
@@ -1728,7 +1581,7 @@ if (process.env.NODE_ENV !== 'production') {
 function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
   if (process.env.NODE_ENV !== 'production') {
     for (var typeSpecName in typeSpecs) {
-      if (has(typeSpecs, typeSpecName)) {
+      if (has$1(typeSpecs, typeSpecName)) {
         var error;
         // Prop type validation may throw. In case they do, we don't want to
         // fail the render phase where it didn't fail before. So we log it.
@@ -1739,7 +1592,8 @@ function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
           if (typeof typeSpecs[typeSpecName] !== 'function') {
             var err = Error(
               (componentName || 'React class') + ': ' + location + ' type `' + typeSpecName + '` is invalid; ' +
-              'it must be a function, usually from the `prop-types` package, but received `' + typeof typeSpecs[typeSpecName] + '`.'
+              'it must be a function, usually from the `prop-types` package, but received `' + typeof typeSpecs[typeSpecName] + '`.' +
+              'This often happens because of typos such as `PropTypes.function` instead of `PropTypes.func`.'
             );
             err.name = 'Invariant Violation';
             throw err;
@@ -1787,7 +1641,6 @@ checkPropTypes.resetWarningCache = function() {
 
 var checkPropTypes_1 = checkPropTypes;
 
-var has$1 = Function.call.bind(Object.prototype.hasOwnProperty);
 var printWarning$1 = function() {};
 
 if (process.env.NODE_ENV !== 'production') {
@@ -1888,6 +1741,7 @@ var factoryWithTypeCheckers = function(isValidElement, throwOnDirectAccess) {
   // Keep this list in sync with production version in `./factoryWithThrowingShims.js`.
   var ReactPropTypes = {
     array: createPrimitiveTypeChecker('array'),
+    bigint: createPrimitiveTypeChecker('bigint'),
     bool: createPrimitiveTypeChecker('boolean'),
     func: createPrimitiveTypeChecker('function'),
     number: createPrimitiveTypeChecker('number'),
@@ -1933,8 +1787,9 @@ var factoryWithTypeCheckers = function(isValidElement, throwOnDirectAccess) {
    * is prohibitively expensive if they are created too often, such as what
    * happens in oneOfType() for any type before the one that matched.
    */
-  function PropTypeError(message) {
+  function PropTypeError(message, data) {
     this.message = message;
+    this.data = data && typeof data === 'object' ? data: {};
     this.stack = '';
   }
   // Make `instanceof Error` still work for returned errors.
@@ -1969,7 +1824,7 @@ var factoryWithTypeCheckers = function(isValidElement, throwOnDirectAccess) {
           ) {
             printWarning$1(
               'You are manually calling a React.PropTypes validation ' +
-              'function for the `' + propFullName + '` prop on `' + componentName  + '`. This is deprecated ' +
+              'function for the `' + propFullName + '` prop on `' + componentName + '`. This is deprecated ' +
               'and will throw in the standalone `prop-types` package. ' +
               'You may be seeing this warning due to a third-party PropTypes ' +
               'library. See https://fb.me/react-warning-dont-call-proptypes ' + 'for details.'
@@ -2008,7 +1863,10 @@ var factoryWithTypeCheckers = function(isValidElement, throwOnDirectAccess) {
         // 'of type `object`'.
         var preciseType = getPreciseType(propValue);
 
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + preciseType + '` supplied to `' + componentName + '`, expected ') + ('`' + expectedType + '`.'));
+        return new PropTypeError(
+          'Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + preciseType + '` supplied to `' + componentName + '`, expected ') + ('`' + expectedType + '`.'),
+          {expectedType: expectedType}
+        );
       }
       return null;
     }
@@ -2122,7 +1980,7 @@ var factoryWithTypeCheckers = function(isValidElement, throwOnDirectAccess) {
         return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an object.'));
       }
       for (var key in propValue) {
-        if (has$1(propValue, key)) {
+        if (has(propValue, key)) {
           var error = typeChecker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret_1);
           if (error instanceof Error) {
             return error;
@@ -2152,14 +2010,19 @@ var factoryWithTypeCheckers = function(isValidElement, throwOnDirectAccess) {
     }
 
     function validate(props, propName, componentName, location, propFullName) {
+      var expectedTypes = [];
       for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
         var checker = arrayOfTypeCheckers[i];
-        if (checker(props, propName, componentName, location, propFullName, ReactPropTypesSecret_1) == null) {
+        var checkerResult = checker(props, propName, componentName, location, propFullName, ReactPropTypesSecret_1);
+        if (checkerResult == null) {
           return null;
         }
+        if (checkerResult.data && has(checkerResult.data, 'expectedType')) {
+          expectedTypes.push(checkerResult.data.expectedType);
+        }
       }
-
-      return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`.'));
+      var expectedTypesMessage = (expectedTypes.length > 0) ? ', expected one of type [' + expectedTypes.join(', ') + ']': '';
+      return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`' + expectedTypesMessage + '.'));
     }
     return createChainableTypeChecker(validate);
   }
@@ -2174,6 +2037,13 @@ var factoryWithTypeCheckers = function(isValidElement, throwOnDirectAccess) {
     return createChainableTypeChecker(validate);
   }
 
+  function invalidValidatorError(componentName, location, propFullName, key, type) {
+    return new PropTypeError(
+      (componentName || 'React class') + ': ' + location + ' type `' + propFullName + '.' + key + '` is invalid; ' +
+      'it must be a function, usually from the `prop-types` package, but received `' + type + '`.'
+    );
+  }
+
   function createShapeTypeChecker(shapeTypes) {
     function validate(props, propName, componentName, location, propFullName) {
       var propValue = props[propName];
@@ -2183,8 +2053,8 @@ var factoryWithTypeCheckers = function(isValidElement, throwOnDirectAccess) {
       }
       for (var key in shapeTypes) {
         var checker = shapeTypes[key];
-        if (!checker) {
-          continue;
+        if (typeof checker !== 'function') {
+          return invalidValidatorError(componentName, location, propFullName, key, getPreciseType(checker));
         }
         var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret_1);
         if (error) {
@@ -2203,16 +2073,18 @@ var factoryWithTypeCheckers = function(isValidElement, throwOnDirectAccess) {
       if (propType !== 'object') {
         return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
       }
-      // We need to check all keys in case some are required but missing from
-      // props.
+      // We need to check all keys in case some are required but missing from props.
       var allKeys = objectAssign({}, props[propName], shapeTypes);
       for (var key in allKeys) {
         var checker = shapeTypes[key];
+        if (has(shapeTypes, key) && typeof checker !== 'function') {
+          return invalidValidatorError(componentName, location, propFullName, key, getPreciseType(checker));
+        }
         if (!checker) {
           return new PropTypeError(
             'Invalid ' + location + ' `' + propFullName + '` key `' + key + '` supplied to `' + componentName + '`.' +
             '\nBad object: ' + JSON.stringify(props[propName], null, '  ') +
-            '\nValid keys: ' +  JSON.stringify(Object.keys(shapeTypes), null, '  ')
+            '\nValid keys: ' + JSON.stringify(Object.keys(shapeTypes), null, '  ')
           );
         }
         var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret_1);
@@ -2388,6 +2260,7 @@ var factoryWithThrowingShims = function() {
   // Keep this list in sync with production version in `./factoryWithTypeCheckers.js`.
   var ReactPropTypes = {
     array: shim,
+    bigint: shim,
     bool: shim,
     func: shim,
     number: shim,
@@ -2440,23 +2313,18 @@ if (process.env.NODE_ENV !== 'production') {
 
 var PersonRow = function PersonRow(props) {
   var _useState = React.useState(false),
-      selected = _useState[0],
-      setSelected = _useState[1];
-
+    selected = _useState[0],
+    setSelected = _useState[1];
   var person = props.person,
-      chat = props.chat,
-      conn = props.conn;
-
+    chat = props.chat,
+    conn = props.conn;
   if (!person || !chat) {
     return /*#__PURE__*/React__default.createElement("div", null);
   }
-
   if (!conn || conn === null) return /*#__PURE__*/React__default.createElement("div", null);
-
   function onRemovePerson() {
     reactChatEngine.removePerson(props.conn, props.chat.id, props.person.username);
   }
-
   function renderPersonText(person) {
     if (person.first_name && person.first_name !== null) {
       return "" + person.first_name + (person.last_name ? " " + person.last_name : '');
@@ -2464,7 +2332,6 @@ var PersonRow = function PersonRow(props) {
       return person.username;
     }
   }
-
   return /*#__PURE__*/React__default.createElement("div", {
     className: "ce-person-container",
     onMouseEnter: function onMouseEnter() {
@@ -2516,12 +2383,11 @@ PersonRow.propTypes = {
 
 var PersonOption = function PersonOption(props) {
   var _useState = React.useState(false),
-      focused = _useState[0],
-      setFocused = _useState[1];
-
+    focused = _useState[0],
+    setFocused = _useState[1];
   var _props$person = props.person,
-      avatar = _props$person.avatar,
-      username = _props$person.username;
+    avatar = _props$person.avatar,
+    username = _props$person.username;
   return /*#__PURE__*/React__default.createElement("div", {
     id: "ce-username-option-" + username,
     onMouseEnter: function onMouseEnter() {
@@ -2560,18 +2426,16 @@ PersonOption.propTypes = {
 
 var PersonForm = function PersonForm(props) {
   var _useState = React.useState({
-    value: '',
-    others: []
-  }),
-      state = _useState[0],
-      setState = _useState[1];
-
+      value: '',
+      others: []
+    }),
+    state = _useState[0],
+    setState = _useState[1];
   function _handleChange(value) {
     setState(_extends({}, state, {
       value: value
     }));
   }
-
   function invitePerson(name) {
     reactChatEngine.addPerson(props.conn, props.chat.id, name, function () {
       setState(_extends({}, state, {
@@ -2580,7 +2444,6 @@ var PersonForm = function PersonForm(props) {
       getOthers();
     });
   }
-
   function getOthers() {
     reactChatEngine.getOtherPeople(props.conn, props.chat.id, function (id, others) {
       return setState(_extends({}, state, {
@@ -2588,7 +2451,6 @@ var PersonForm = function PersonForm(props) {
       }));
     }, function () {});
   }
-
   function _renderOption(option) {
     return /*#__PURE__*/React__default.createElement(PersonOption, {
       person: option,
@@ -2597,7 +2459,6 @@ var PersonForm = function PersonForm(props) {
       }
     });
   }
-
   return /*#__PURE__*/React__default.createElement("div", {
     style: {
       marginBottom: '12px'
@@ -2627,13 +2488,11 @@ PersonForm.propTypes = {
 
 var SettingsBlock = function SettingsBlock(props) {
   var _useState = React.useState(true),
-      collapsed = _useState[0],
-      setCollapsed = _useState[1];
-
+    collapsed = _useState[0],
+    setCollapsed = _useState[1];
   var _useState2 = React.useState(false),
-      hovered = _useState2[0],
-      setHovered = _useState2[1];
-
+    hovered = _useState2[0],
+    setHovered = _useState2[1];
   return /*#__PURE__*/React__default.createElement("div", {
     style: {
       borderTop: '1px solid #f0f0f0'
@@ -2675,16 +2534,13 @@ var SettingsBlock = function SettingsBlock(props) {
 
 var PeopleSettings = function PeopleSettings() {
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      conn = _useContext.conn,
-      chats = _useContext.chats,
-      activeChat = _useContext.activeChat;
-
+    conn = _useContext.conn,
+    chats = _useContext.chats,
+    activeChat = _useContext.activeChat;
   var chat = chats && chats[activeChat];
-
   if (!chat || chat.is_direct_chat) {
     return /*#__PURE__*/React__default.createElement("div", null);
   }
-
   function renderChatPeople(people, chat) {
     return people.map(function (chatPerson, index) {
       return /*#__PURE__*/React__default.createElement(PersonRow, {
@@ -2695,7 +2551,6 @@ var PeopleSettings = function PeopleSettings() {
       });
     });
   }
-
   return /*#__PURE__*/React__default.createElement("div", {
     style: {
       borderTop: '1px solid #f0f0f0'
@@ -2719,11 +2574,9 @@ var PeopleSettings = function PeopleSettings() {
 
 var Thumbnail = function Thumbnail(props) {
   var attachment = props.attachment;
-
   if (!attachment) {
     return /*#__PURE__*/React__default.createElement("div", null);
   }
-
   return /*#__PURE__*/React__default.createElement("div", {
     style: styles$6.container,
     className: "ce-photo-thumbnail"
@@ -2761,12 +2614,10 @@ Thumbnail.propTypes = {
 
 var PhotosSettings = function PhotosSettings() {
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      chats = _useContext.chats,
-      activeChat = _useContext.activeChat;
-
+    chats = _useContext.chats,
+    activeChat = _useContext.activeChat;
   var chat = chats && chats[activeChat];
   if (!chat) return /*#__PURE__*/React__default.createElement("div", null);
-
   function renderPhotos(attachments) {
     return attachments.map(function (attachment, index) {
       return /*#__PURE__*/React__default.createElement(Thumbnail, {
@@ -2775,7 +2626,6 @@ var PhotosSettings = function PhotosSettings() {
       });
     });
   }
-
   return /*#__PURE__*/React__default.createElement("div", {
     style: {
       borderTop: '1px solid #f0f0f0'
@@ -2795,10 +2645,9 @@ var PhotosSettings = function PhotosSettings() {
 
 var OptionsSettings = function OptionsSettings() {
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      conn = _useContext.conn,
-      chats = _useContext.chats,
-      activeChat = _useContext.activeChat;
-
+    conn = _useContext.conn,
+    chats = _useContext.chats,
+    activeChat = _useContext.activeChat;
   var chat = chats && chats[activeChat];
   if (!chat) return /*#__PURE__*/React__default.createElement("div", null);
   return /*#__PURE__*/React__default.createElement("div", {
@@ -2829,27 +2678,23 @@ var OptionsSettings = function OptionsSettings() {
 
 var NewMessageForm = function NewMessageForm(props) {
   var didMountRef = React.useRef(false);
-
   var _useState = React.useState({
-    activeChat: null,
-    value: ''
-  }),
-      state = _useState[0],
-      setState = _useState[1];
-
+      activeChat: null,
+      value: ''
+    }),
+    state = _useState[0],
+    setState = _useState[1];
   function _handleChange(event) {
     setState(_extends({}, state, {
       value: event.target.value
     }));
   }
-
   function handleSubmit(event) {
     event.preventDefault();
     reactChatEngine.editChat(props.conn, props.chat.id, {
       title: state.value
     }, function (data) {});
   }
-
   React.useEffect(function () {
     if (!didMountRef.current) {
       didMountRef.current = true;
@@ -2889,15 +2734,13 @@ NewMessageForm.propTypes = {
 
 var ChatSettingsTop = function ChatSettingsTop() {
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      conn = _useContext.conn,
-      chats = _useContext.chats,
-      activeChat = _useContext.activeChat;
-
+    conn = _useContext.conn,
+    chats = _useContext.chats,
+    activeChat = _useContext.activeChat;
   var chat = chats && chats[activeChat];
   if (!chat || !conn || conn === null) return /*#__PURE__*/React__default.createElement("div", null);
   var topPeople = chat.people.slice(0, 3);
   var otherPerson = getOtherPerson(chat.people);
-
   function renderOnePerson(people) {
     return /*#__PURE__*/React__default.createElement("div", {
       style: {
@@ -2916,7 +2759,6 @@ var ChatSettingsTop = function ChatSettingsTop() {
       avatar: people[0].person.avatar
     })));
   }
-
   function renderTwoPeople(people) {
     return /*#__PURE__*/React__default.createElement("div", {
       style: {
@@ -2945,7 +2787,6 @@ var ChatSettingsTop = function ChatSettingsTop() {
       avatar: people[1].person.avatar
     })));
   }
-
   function renderThreePeople(people) {
     return /*#__PURE__*/React__default.createElement("div", {
       style: {
@@ -2984,13 +2825,11 @@ var ChatSettingsTop = function ChatSettingsTop() {
       avatar: people[2].person.avatar
     })));
   }
-
   function getOtherPerson(people) {
     return people.find(function (person) {
       return person.person.username !== conn.userName;
     });
   }
-
   return /*#__PURE__*/React__default.createElement("div", {
     className: "ce-chat-settings-container"
   }, /*#__PURE__*/React__default.createElement("div", {
@@ -3013,10 +2852,9 @@ var ChatSettingsTop = function ChatSettingsTop() {
 
 var ChatSettings = function ChatSettings(props) {
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      conn = _useContext.conn,
-      chats = _useContext.chats,
-      activeChat = _useContext.activeChat;
-
+    conn = _useContext.conn,
+    chats = _useContext.chats,
+    activeChat = _useContext.activeChat;
   var chat = chats && chats[activeChat];
   if (conn === null) return /*#__PURE__*/React__default.createElement("div", null);
   return /*#__PURE__*/React__default.createElement("div", {
@@ -3043,13 +2881,10 @@ var styles$7 = {
 
 var ChatSettingsDrawer = function ChatSettingsDrawer(props) {
   var _useState = React.useState(false),
-      isOpen = _useState[0],
-      setIsOpen = _useState[1];
-
+    isOpen = _useState[0],
+    setIsOpen = _useState[1];
   var context = React.useContext(reactChatEngine.ChatEngineContext);
-
   var allProps = _extends({}, props, context.conn);
-
   return /*#__PURE__*/React__default.createElement("div", null, /*#__PURE__*/React__default.createElement(icons.SettingOutlined, {
     onClick: function onClick() {
       return setIsOpen(true);
@@ -3103,27 +2938,23 @@ reactGridSystem.setConfiguration({
   maxScreenClass: 'xl',
   gutterWidth: 0
 });
-
 var ChatHeader = function ChatHeader() {
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      conn = _useContext.conn,
-      chats = _useContext.chats,
-      activeChat = _useContext.activeChat;
-
+    conn = _useContext.conn,
+    chats = _useContext.chats,
+    activeChat = _useContext.activeChat;
   var chat = chats ? chats[activeChat] : undefined;
   var otherPerson = chat && conn && chat.people.find(function (person) {
     return person.person.username !== conn.userName;
   });
   var title = chat ? chat.is_direct_chat && otherPerson ? otherPerson.person.username : chat.title : undefined;
   var text = 'Say hello!';
-
   if (!chat) {
     text = 'Loading...';
   } else if (chat.last_message.created && chat.last_message.created.length > 0) {
     var dateTime = getDateTime(chat.last_message.created, conn ? conn.offset : undefined);
     text = "Active " + formatDateTime(dateTime);
   }
-
   return /*#__PURE__*/React__default.createElement(reactGridSystem.Row, {
     className: "ce-chat-title",
     style: styles$9.titleSection
@@ -3188,12 +3019,10 @@ var styles$9 = {
 
 var DatePartition = function DatePartition(props) {
   var lastCreated = props.lastCreated,
-      created = props.created;
-
+    created = props.created;
   function getDate(date) {
     return date ? date.substr(0, 10) : null;
   }
-
   var lastDate = getDate(lastCreated);
   var thisDate = getDate(created);
   if (lastCreated && lastDate === thisDate) return /*#__PURE__*/React__default.createElement("div", null);
@@ -3225,18 +3054,14 @@ var getFileName = function getFileName(fileUrl) {
 };
 
 var _loadingContainer, _thumbnail;
-
 var Thumbnail$1 = function Thumbnail(props) {
   var _useState = React.useState(false),
-      hovered = _useState[0],
-      setHovered = _useState[1];
-
+    hovered = _useState[0],
+    setHovered = _useState[1];
   var attachment = props.attachment;
-
   var style = _extends({}, styles$b.thumbnail, {
     border: hovered ? '1px solid #1890ff' : '1px solid #fff'
   });
-
   if (!attachment) {
     return /*#__PURE__*/React__default.createElement("div", {
       style: styles$b.loadingContainer
@@ -3248,7 +3073,6 @@ var Thumbnail$1 = function Thumbnail(props) {
       }
     }));
   }
-
   return /*#__PURE__*/React__default.createElement("img", {
     onClick: function onClick() {
       return window.open(attachment.file);
@@ -3290,16 +3114,13 @@ var styles$b = {
 
 var FileView = function FileView(props) {
   var _useState = React.useState(false),
-      hovered = _useState[0],
-      setHovered = _useState[1];
-
+    hovered = _useState[0],
+    setHovered = _useState[1];
   var attachment = props.attachment;
-
   var style = _extends({}, styles$c.fileView, {
     color: hovered ? '#1890ff' : '#434343',
     border: hovered ? '1px solid #1890ff' : '1px solid #434343'
   });
-
   if (!attachment) {
     return /*#__PURE__*/React__default.createElement("div", {
       style: styles$c.loadingContainer
@@ -3311,7 +3132,6 @@ var FileView = function FileView(props) {
       }
     }));
   }
-
   return /*#__PURE__*/React__default.createElement("div", {
     style: style,
     onMouseEnter: function onMouseEnter() {
@@ -3347,17 +3167,13 @@ var styles$c = {
 };
 
 var colors = ['#D64045', '#5B3000', '#00CC99', '#467599', '#1D3354', '#8F250C', '#6153CC', '#961D4E', '#A29F15', '#0CAADC', '#FF5154', '#FA7921', '#688E26', '#550527', '#A10702', '#FF1053', '#6C6EA0', '#100B00'];
-
 function stringToNumber(str) {
   var sum = 0;
-
   for (var i = 0; i < str.length; i++) {
     sum = sum + str.charCodeAt(i) * i - 97;
   }
-
   return sum;
 }
-
 function stringToColor(str) {
   if (!str) {
     return 'black';
@@ -3368,42 +3184,33 @@ function stringToColor(str) {
 
 var Dot = /*#__PURE__*/function (_Component) {
   _inheritsLoose(Dot, _Component);
-
   function Dot() {
     var _this;
-
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
-
     _this = _Component.call.apply(_Component, [this].concat(args)) || this;
     _this.state = {
       avatar: ''
     };
     return _this;
   }
-
   var _proto = Dot.prototype;
-
   _proto.updateImg = function updateImg() {
     var avatar = this.props.avatar;
     avatar = avatar && avatar !== null ? avatar : '';
-
     if (avatar.split('?')[0] !== this.state.avatar.split('?')[0]) {
       this.setState({
         avatar: avatar
       });
     }
   };
-
   _proto.componentDidMount = function componentDidMount() {
     this.updateImg();
   };
-
   _proto.componentDidUpdate = function componentDidUpdate() {
     this.updateImg();
   };
-
   _proto.render = function render() {
     var username = this.props.username;
     var color = stringToColor(username);
@@ -3421,7 +3228,6 @@ var Dot = /*#__PURE__*/function (_Component) {
       })
     });
   };
-
   return Dot;
 }(React.Component);
 var styles$d = {
@@ -3454,23 +3260,18 @@ var Body = function Body(props) {
 reactGridSystem.setConfiguration({
   maxScreenClass: 'xl'
 });
-
 var Message = function Message(props) {
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      conn = _useContext.conn;
-
+    conn = _useContext.conn;
   var _useState = React.useState(false),
-      hovered = _useState[0],
-      setHovered = _useState[1];
-
+    hovered = _useState[0],
+    setHovered = _useState[1];
   function renderReads() {
     var chat = props.chat,
-        message = props.message;
-
+      message = props.message;
     if (!chat) {
       return /*#__PURE__*/React__default.createElement("div", null);
     }
-
     return chat.people.map(function (chatPerson, index) {
       return /*#__PURE__*/React__default.createElement(Dot, {
         key: "read_" + index,
@@ -3484,13 +3285,11 @@ var Message = function Message(props) {
       });
     });
   }
-
   function renderImages() {
     var message = props.message;
     var attachments = message && message.attachments ? message.attachments : [];
     return attachments.map(function (attachment, index) {
       var fileName = getFileName(attachment.file ? attachment.file : attachment.name);
-
       if (isImage(fileName)) {
         return /*#__PURE__*/React__default.createElement(Thumbnail$1, {
           attachment: attachment.file && attachment,
@@ -3503,13 +3302,11 @@ var Message = function Message(props) {
       }
     });
   }
-
   function renderFiles() {
     var message = props.message;
     var attachments = message && message.attachments ? message.attachments : [];
     return attachments.map(function (attachment, index) {
       var fileName = getFileName(attachment.file ? attachment.file : attachment.name);
-
       if (!isImage(fileName)) {
         return /*#__PURE__*/React__default.createElement(FileView, {
           attachment: attachment.file && attachment,
@@ -3522,15 +3319,12 @@ var Message = function Message(props) {
       }
     });
   }
-
   var lastMessage = props.lastMessage,
-      message = props.message,
-      nextMessage = props.nextMessage;
-
+    message = props.message,
+    nextMessage = props.nextMessage;
   if (!message) {
     return /*#__PURE__*/React__default.createElement("div", null);
   }
-
   var attachments = message && message.attachments && message.attachments;
   var topRightRadius = !lastMessage || lastMessage.sender_username !== message.sender_username ? '1.3em' : '0.3em';
   var bottomRightRadius = !nextMessage || nextMessage.sender_username !== message.sender_username ? '1.3em' : '0.3em';
@@ -3622,23 +3416,18 @@ var styles$e = {
 reactGridSystem.setConfiguration({
   maxScreenClass: 'xl'
 });
-
 var TheirMessage = function TheirMessage(props) {
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      conn = _useContext.conn;
-
+    conn = _useContext.conn;
   var _useState = React.useState(false),
-      hovered = _useState[0],
-      setHovered = _useState[1];
-
+    hovered = _useState[0],
+    setHovered = _useState[1];
   function renderReads() {
     var chat = props.chat,
-        message = props.message;
-
+      message = props.message;
     if (!chat) {
       return /*#__PURE__*/React__default.createElement("div", null);
     }
-
     return chat.people.map(function (person, index) {
       return /*#__PURE__*/React__default.createElement(reactChatEngine.Dot, {
         key: "read_" + index,
@@ -3652,13 +3441,11 @@ var TheirMessage = function TheirMessage(props) {
       });
     });
   }
-
   function renderImages() {
     var message = props.message;
     var attachments = message && message.attachments ? message.attachments : [];
     return attachments.map(function (attachment, index) {
       var fileName = getFileName(attachment.file);
-
       if (isImage(fileName)) {
         return /*#__PURE__*/React__default.createElement(Thumbnail$1, {
           attachment: attachment,
@@ -3671,13 +3458,11 @@ var TheirMessage = function TheirMessage(props) {
       }
     });
   }
-
   function renderFiles() {
     var message = props.message;
     var attachments = message && message.attachments ? message.attachments : [];
     return attachments.map(function (attachment, index) {
       var fileName = getFileName(attachment.file);
-
       if (!isImage(fileName)) {
         return /*#__PURE__*/React__default.createElement(FileView, {
           attachment: attachment,
@@ -3690,15 +3475,12 @@ var TheirMessage = function TheirMessage(props) {
       }
     });
   }
-
   var lastMessage = props.lastMessage,
-      message = props.message,
-      nextMessage = props.nextMessage;
-
+    message = props.message,
+    nextMessage = props.nextMessage;
   if (!message) {
     return /*#__PURE__*/React__default.createElement("div", null);
   }
-
   var attachments = message && message.attachments && message.attachments;
   var topLeftRadius = !lastMessage || lastMessage.sender_username !== message.sender_username ? '1.3em' : '0.3em';
   var bottomLeftRadius = !nextMessage || nextMessage.sender_username !== message.sender_username ? '1.3em' : '0.3em';
@@ -3808,21 +3590,17 @@ var styles$f = {
 
 var Message$1 = function Message$1(props) {
   var lastMessage = props.lastMessage,
-      message = props.message,
-      nextMessage = props.nextMessage,
-      chat = props.chat;
-
+    message = props.message,
+    nextMessage = props.nextMessage,
+    chat = props.chat;
   var _useContext = React.useContext(ChatEngineContext),
-      conn = _useContext.conn;
-
+    conn = _useContext.conn;
   if (!message || !chat) {
     return /*#__PURE__*/React__default.createElement("div", null);
   }
-
   if (!conn || conn === null) {
     return /*#__PURE__*/React__default.createElement("div", null);
   }
-
   return /*#__PURE__*/React__default.createElement("div", {
     className: "ce-message-and-date"
   }, /*#__PURE__*/React__default.createElement(DatePartition, {
@@ -3847,12 +3625,11 @@ var Message$1 = function Message$1(props) {
 
 var Messages = function Messages(props) {
   var _useContext = React.useContext(ChatEngineContext),
-      conn = _useContext.conn,
-      chats = _useContext.chats,
-      messages = _useContext.messages,
-      activeChat = _useContext.activeChat,
-      setIsBottomVisible = _useContext.setIsBottomVisible;
-
+    conn = _useContext.conn,
+    chats = _useContext.chats,
+    messages = _useContext.messages,
+    activeChat = _useContext.activeChat,
+    setIsBottomVisible = _useContext.setIsBottomVisible;
   var chat = chats && chats[activeChat];
   var keys = Object.keys(messages);
   if (!conn || conn === null || !chat) return /*#__PURE__*/React__default.createElement("div", null);
@@ -3860,7 +3637,6 @@ var Messages = function Messages(props) {
     var message = messages[key];
     var lastMessageKey = index === 0 ? null : keys[index - 1];
     var nextMessageKey = index === keys.length - 1 ? null : keys[index + 1];
-
     if (props.renderMessageBubble) {
       return /*#__PURE__*/React__default.createElement("div", {
         key: "message_" + index
@@ -3874,7 +3650,6 @@ var Messages = function Messages(props) {
         }
       }), props.renderMessageBubble(conn, chat, messages[lastMessageKey], message, messages[nextMessageKey]));
     }
-
     return /*#__PURE__*/React__default.createElement("div", {
       key: "message_" + index,
       id: "ce-message-" + message.id
@@ -3897,16 +3672,13 @@ var Messages = function Messages(props) {
 
 var IsTyping = function IsTyping() {
   var didMountRef = React.useRef(false);
-
   var _useState = React.useState(Date.now()),
-      currentTime = _useState[0],
-      setCurrentTime = _useState[1];
-
+    currentTime = _useState[0],
+    setCurrentTime = _useState[1];
   var _useContext = React.useContext(ChatEngineContext),
-      conn = _useContext.conn,
-      activeChat = _useContext.activeChat,
-      typingCounter = _useContext.typingCounter;
-
+    conn = _useContext.conn,
+    activeChat = _useContext.activeChat,
+    typingCounter = _useContext.typingCounter;
   var typers = typingCounter && typingCounter[activeChat] ? typingCounter[activeChat] : [];
   React.useEffect(function () {
     if (!didMountRef.current) {
@@ -3944,9 +3716,8 @@ var isImage$1 = function isImage(fileName) {
 
 var FilePreview = function FilePreview(props) {
   var _useState = React.useState(false),
-      hovered = _useState[0],
-      setHovered = _useState[1];
-
+    hovered = _useState[0],
+    setHovered = _useState[1];
   return /*#__PURE__*/React__default.createElement("div", {
     onMouseEnter: function onMouseEnter() {
       return setHovered(true);
@@ -3994,7 +3765,6 @@ var FilesRow = function FilesRow(props) {
       }
     });
   }
-
   return /*#__PURE__*/React__default.createElement("div", {
     className: "ce-message-files-row",
     style: {
@@ -4006,13 +3776,11 @@ var FilesRow = function FilesRow(props) {
 
 var Thumbnail$2 = function Thumbnail(props) {
   var _useState = React.useState(false),
-      hovered = _useState[0],
-      setHovered = _useState[1];
-
+    hovered = _useState[0],
+    setHovered = _useState[1];
   var _useState2 = React.useState(''),
-      blob = _useState2[0],
-      setBlob = _useState2[1];
-
+    blob = _useState2[0],
+    setBlob = _useState2[1];
   React.useEffect(function () {
     setBlob(URL.createObjectURL(props.file));
   }, [props.file]);
@@ -4075,7 +3843,6 @@ var ImagesRow = function ImagesRow(props) {
       }
     });
   }
-
   return /*#__PURE__*/React__default.createElement("div", {
     className: "ce-message-images-row",
     style: {
@@ -4087,16 +3854,14 @@ var ImagesRow = function ImagesRow(props) {
 
 var AttachmentsInput = function AttachmentsInput(props) {
   var _useState = React.useState({
-    hovered: false
-  }),
-      state = _useState[0],
-      setState = _useState[1];
-
+      hovered: false
+    }),
+    state = _useState[0],
+    setState = _useState[1];
   function onSelect(event) {
     var files = Array.from(event.target.files);
     props.onSelectFiles && props.onSelectFiles(files);
   }
-
   return /*#__PURE__*/React__default.createElement("form", {
     className: "uploader",
     encType: "multipart/form-data",
@@ -4136,7 +3901,6 @@ var AttachmentsInput = function AttachmentsInput(props) {
     }
   }));
 };
-
 var styles$i = {
   icon: {
     background: 'none',
@@ -4152,9 +3916,8 @@ var styles$i = {
 
 var SendButton = function SendButton() {
   var _useState = React.useState(false),
-      hover = _useState[0],
-      setHover = _useState[1];
-
+    hover = _useState[0],
+    setHover = _useState[1];
   return /*#__PURE__*/React__default.createElement("div", {
     style: {
       height: "0px"
@@ -4187,27 +3950,19 @@ var modules = {
   }
 };
 var formats = ['bold', 'italic', 'underline', 'strike', 'code', 'list', 'bullet', 'indent', 'link', 'code'];
-
 var FormHtmlEditor = /*#__PURE__*/function (_Component) {
   _inheritsLoose(FormHtmlEditor, _Component);
-
   function FormHtmlEditor(props) {
     var _this;
-
     _this = _Component.call(this, props) || this;
-
     if (document) {
       _this.quill = require('react-quill');
     }
-
     return _this;
   }
-
   var _proto = FormHtmlEditor.prototype;
-
   _proto.render = function render() {
     var _this2 = this;
-
     var Quill = this.quill;
     if (!Quill) return /*#__PURE__*/React__default.createElement("div", null);
     return /*#__PURE__*/React__default.createElement("div", {
@@ -4251,59 +4006,47 @@ var FormHtmlEditor = /*#__PURE__*/function (_Component) {
       }
     }, /*#__PURE__*/React__default.createElement(SendButton, null))), /*#__PURE__*/React__default.createElement("style", null, "\n                /*!\n                * Quill Editor v1.3.7\n                * https://quilljs.com/\n                * Copyright (c) 2014, Jason Chen\n                * Copyright (c) 2013, salesforce.com\n                */\n                .ql-container{box-sizing:border-box;font-family:Helvetica,Arial,sans-serif;font-size:13px;height:100%;margin:0;position:relative}.ql-container.ql-disabled .ql-tooltip{visibility:hidden}.ql-container.ql-disabled .ql-editor ul[data-checked]>li::before{pointer-events:none}.ql-clipboard{left:-100000px;height:1px;overflow-y:hidden;position:absolute;top:50%}.ql-clipboard p{margin:0;padding:0}.ql-editor{box-sizing:border-box;line-height:1.42;height:100%;outline:0;overflow-y:auto;padding:12px 15px;tab-size:4;-moz-tab-size:4;text-align:left;white-space:pre-wrap;word-wrap:break-word}.ql-editor>*{cursor:text}.ql-editor blockquote,.ql-editor h1,.ql-editor h2,.ql-editor h3,.ql-editor h4,.ql-editor h5,.ql-editor h6,.ql-editor ol,.ql-editor p,.ql-editor pre,.ql-editor ul{margin:0;padding:0;counter-reset:list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9}.ql-editor ol,.ql-editor ul{padding-left:1.5em}.ql-editor ol>li,.ql-editor ul>li{list-style-type:none}.ql-editor ul>li::before{content:{};}.ql-editor ul[data-checked=false]{pointer-events:none}.ql-editor ul[data-checked=false]>li *,.ql-editor ul[data-checked=true]>li *{pointer-events:all}.ql-editor ul[data-checked=false]>li::before,.ql-editor ul[data-checked=true]>li::before{color:#777;cursor:pointer;pointer-events:all}.ql-editor ul[data-checked=true]>li::before{content:{};}.ql-editor li:not(.ql-direction-rtl)::before{margin-left:-1.5em;margin-right:.3em;text-align:right}.ql-editor li.ql-direction-rtl::before{margin-left:.3em;margin-right:-1.5em}.ql-editor ol li:not(.ql-direction-rtl),.ql-editor ul li:not(.ql-direction-rtl){padding-left:1.5em}.ql-editor ol li.ql-direction-rtl,.ql-editor ul li.ql-direction-rtl{padding-right:1.5em}.ql-editor ol li{counter-reset:list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;counter-increment:list-0}.ql-editor ol li:before{content:counter(list-0,decimal) '. '}.ql-editor ol li.ql-indent-1{counter-increment:list-1}.ql-editor ol li.ql-indent-1:before{content:counter(list-1,lower-alpha) '. '}.ql-editor ol li.ql-indent-1{counter-reset:list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9}.ql-editor ol li.ql-indent-2{counter-increment:list-2}.ql-editor ol li.ql-indent-2:before{content:counter(list-2,lower-roman) '. '}.ql-editor ol li.ql-indent-2{counter-reset:list-3 list-4 list-5 list-6 list-7 list-8 list-9}.ql-editor ol li.ql-indent-3{counter-increment:list-3}.ql-editor ol li.ql-indent-3:before{content:counter(list-3,decimal) '. '}.ql-editor ol li.ql-indent-3{counter-reset:list-4 list-5 list-6 list-7 list-8 list-9}.ql-editor ol li.ql-indent-4{counter-increment:list-4}.ql-editor ol li.ql-indent-4:before{content:counter(list-4,lower-alpha) '. '}.ql-editor ol li.ql-indent-4{counter-reset:list-5 list-6 list-7 list-8 list-9}.ql-editor ol li.ql-indent-5{counter-increment:list-5}.ql-editor ol li.ql-indent-5:before{content:counter(list-5,lower-roman) '. '}.ql-editor ol li.ql-indent-5{counter-reset:list-6 list-7 list-8 list-9}.ql-editor ol li.ql-indent-6{counter-increment:list-6}.ql-editor ol li.ql-indent-6:before{content:counter(list-6,decimal) '. '}.ql-editor ol li.ql-indent-6{counter-reset:list-7 list-8 list-9}.ql-editor ol li.ql-indent-7{counter-increment:list-7}.ql-editor ol li.ql-indent-7:before{content:counter(list-7,lower-alpha) '. '}.ql-editor ol li.ql-indent-7{counter-reset:list-8 list-9}.ql-editor ol li.ql-indent-8{counter-increment:list-8}.ql-editor ol li.ql-indent-8:before{content:counter(list-8,lower-roman) '. '}.ql-editor ol li.ql-indent-8{counter-reset:list-9}.ql-editor ol li.ql-indent-9{counter-increment:list-9}.ql-editor ol li.ql-indent-9:before{content:counter(list-9,decimal) '. '}.ql-editor .ql-indent-1:not(.ql-direction-rtl){padding-left:3em}.ql-editor li.ql-indent-1:not(.ql-direction-rtl){padding-left:4.5em}.ql-editor .ql-indent-1.ql-direction-rtl.ql-align-right{padding-right:3em}.ql-editor li.ql-indent-1.ql-direction-rtl.ql-align-right{padding-right:4.5em}.ql-editor .ql-indent-2:not(.ql-direction-rtl){padding-left:6em}.ql-editor li.ql-indent-2:not(.ql-direction-rtl){padding-left:7.5em}.ql-editor .ql-indent-2.ql-direction-rtl.ql-align-right{padding-right:6em}.ql-editor li.ql-indent-2.ql-direction-rtl.ql-align-right{padding-right:7.5em}.ql-editor .ql-indent-3:not(.ql-direction-rtl){padding-left:9em}.ql-editor li.ql-indent-3:not(.ql-direction-rtl){padding-left:10.5em}.ql-editor .ql-indent-3.ql-direction-rtl.ql-align-right{padding-right:9em}.ql-editor li.ql-indent-3.ql-direction-rtl.ql-align-right{padding-right:10.5em}.ql-editor .ql-indent-4:not(.ql-direction-rtl){padding-left:12em}.ql-editor li.ql-indent-4:not(.ql-direction-rtl){padding-left:13.5em}.ql-editor .ql-indent-4.ql-direction-rtl.ql-align-right{padding-right:12em}.ql-editor li.ql-indent-4.ql-direction-rtl.ql-align-right{padding-right:13.5em}.ql-editor .ql-indent-5:not(.ql-direction-rtl){padding-left:15em}.ql-editor li.ql-indent-5:not(.ql-direction-rtl){padding-left:16.5em}.ql-editor .ql-indent-5.ql-direction-rtl.ql-align-right{padding-right:15em}.ql-editor li.ql-indent-5.ql-direction-rtl.ql-align-right{padding-right:16.5em}.ql-editor .ql-indent-6:not(.ql-direction-rtl){padding-left:18em}.ql-editor li.ql-indent-6:not(.ql-direction-rtl){padding-left:19.5em}.ql-editor .ql-indent-6.ql-direction-rtl.ql-align-right{padding-right:18em}.ql-editor li.ql-indent-6.ql-direction-rtl.ql-align-right{padding-right:19.5em}.ql-editor .ql-indent-7:not(.ql-direction-rtl){padding-left:21em}.ql-editor li.ql-indent-7:not(.ql-direction-rtl){padding-left:22.5em}.ql-editor .ql-indent-7.ql-direction-rtl.ql-align-right{padding-right:21em}.ql-editor li.ql-indent-7.ql-direction-rtl.ql-align-right{padding-right:22.5em}.ql-editor .ql-indent-8:not(.ql-direction-rtl){padding-left:24em}.ql-editor li.ql-indent-8:not(.ql-direction-rtl){padding-left:25.5em}.ql-editor .ql-indent-8.ql-direction-rtl.ql-align-right{padding-right:24em}.ql-editor li.ql-indent-8.ql-direction-rtl.ql-align-right{padding-right:25.5em}.ql-editor .ql-indent-9:not(.ql-direction-rtl){padding-left:27em}.ql-editor li.ql-indent-9:not(.ql-direction-rtl){padding-left:28.5em}.ql-editor .ql-indent-9.ql-direction-rtl.ql-align-right{padding-right:27em}.ql-editor li.ql-indent-9.ql-direction-rtl.ql-align-right{padding-right:28.5em}.ql-editor .ql-video{display:block;max-width:100%}.ql-editor .ql-video.ql-align-center{margin:0 auto}.ql-editor .ql-video.ql-align-right{margin:0 0 0 auto}.ql-editor .ql-bg-black{background-color:#000}.ql-editor .ql-bg-red{background-color:#e60000}.ql-editor .ql-bg-orange{background-color:#f90}.ql-editor .ql-bg-yellow{background-color:#ff0}.ql-editor .ql-bg-green{background-color:#008a00}.ql-editor .ql-bg-blue{background-color:#06c}.ql-editor .ql-bg-purple{background-color:#93f}.ql-editor .ql-color-white{color:#fff}.ql-editor .ql-color-red{color:#e60000}.ql-editor .ql-color-orange{color:#f90}.ql-editor .ql-color-yellow{color:#ff0}.ql-editor .ql-color-green{color:#008a00}.ql-editor .ql-color-blue{color:#06c}.ql-editor .ql-color-purple{color:#93f}.ql-editor .ql-font-serif{font-family:Georgia,Times New Roman,serif}.ql-editor .ql-font-monospace{font-family:Monaco,Courier New,monospace}.ql-editor .ql-size-small{font-size:.75em}.ql-editor .ql-size-large{font-size:1.5em}.ql-editor .ql-size-huge{font-size:2.5em}.ql-editor .ql-direction-rtl{direction:rtl;text-align:inherit}.ql-editor .ql-align-center{text-align:center}.ql-editor .ql-align-justify{text-align:justify}.ql-editor .ql-align-right{text-align:right}.ql-editor.ql-blank::before{color:rgba(0,0,0,.6);content:attr(data-placeholder);font-style:italic;left:15px;pointer-events:none;position:absolute;right:15px}.ql-snow .ql-toolbar:after,.ql-snow.ql-toolbar:after{clear:both;content:'';display:table}.ql-snow .ql-toolbar button,.ql-snow.ql-toolbar button{background:0 0;border:none;cursor:pointer;display:inline-block;float:left;height:24px;padding:3px 5px;width:28px}.ql-snow .ql-toolbar button svg,.ql-snow.ql-toolbar button svg{float:left;height:100%}.ql-snow .ql-toolbar button:active:hover,.ql-snow.ql-toolbar button:active:hover{outline:0}.ql-snow .ql-toolbar input.ql-image[type=file],.ql-snow.ql-toolbar input.ql-image[type=file]{display:none}.ql-snow .ql-toolbar .ql-picker-item.ql-selected,.ql-snow .ql-toolbar .ql-picker-item:hover,.ql-snow .ql-toolbar .ql-picker-label.ql-active,.ql-snow .ql-toolbar .ql-picker-label:hover,.ql-snow .ql-toolbar button.ql-active,.ql-snow .ql-toolbar button:focus,.ql-snow .ql-toolbar button:hover,.ql-snow.ql-toolbar .ql-picker-item.ql-selected,.ql-snow.ql-toolbar .ql-picker-item:hover,.ql-snow.ql-toolbar .ql-picker-label.ql-active,.ql-snow.ql-toolbar .ql-picker-label:hover,.ql-snow.ql-toolbar button.ql-active,.ql-snow.ql-toolbar button:focus,.ql-snow.ql-toolbar button:hover{color:#06c}.ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-fill,.ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke.ql-fill,.ql-snow .ql-toolbar .ql-picker-item:hover .ql-fill,.ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke.ql-fill,.ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-fill,.ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke.ql-fill,.ql-snow .ql-toolbar .ql-picker-label:hover .ql-fill,.ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke.ql-fill,.ql-snow .ql-toolbar button.ql-active .ql-fill,.ql-snow .ql-toolbar button.ql-active .ql-stroke.ql-fill,.ql-snow .ql-toolbar button:focus .ql-fill,.ql-snow .ql-toolbar button:focus .ql-stroke.ql-fill,.ql-snow .ql-toolbar button:hover .ql-fill,.ql-snow .ql-toolbar button:hover .ql-stroke.ql-fill,.ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-fill,.ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke.ql-fill,.ql-snow.ql-toolbar .ql-picker-item:hover .ql-fill,.ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke.ql-fill,.ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-fill,.ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke.ql-fill,.ql-snow.ql-toolbar .ql-picker-label:hover .ql-fill,.ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke.ql-fill,.ql-snow.ql-toolbar button.ql-active .ql-fill,.ql-snow.ql-toolbar button.ql-active .ql-stroke.ql-fill,.ql-snow.ql-toolbar button:focus .ql-fill,.ql-snow.ql-toolbar button:focus .ql-stroke.ql-fill,.ql-snow.ql-toolbar button:hover .ql-fill,.ql-snow.ql-toolbar button:hover .ql-stroke.ql-fill{fill:#06c}.ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke,.ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke-miter,.ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke,.ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke-miter,.ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke,.ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke-miter,.ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke,.ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke-miter,.ql-snow .ql-toolbar button.ql-active .ql-stroke,.ql-snow .ql-toolbar button.ql-active .ql-stroke-miter,.ql-snow .ql-toolbar button:focus .ql-stroke,.ql-snow .ql-toolbar button:focus .ql-stroke-miter,.ql-snow .ql-toolbar button:hover .ql-stroke,.ql-snow .ql-toolbar button:hover .ql-stroke-miter,.ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke,.ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke-miter,.ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke,.ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke-miter,.ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke,.ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke-miter,.ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke,.ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke-miter,.ql-snow.ql-toolbar button.ql-active .ql-stroke,.ql-snow.ql-toolbar button.ql-active .ql-stroke-miter,.ql-snow.ql-toolbar button:focus .ql-stroke,.ql-snow.ql-toolbar button:focus .ql-stroke-miter,.ql-snow.ql-toolbar button:hover .ql-stroke,.ql-snow.ql-toolbar button:hover .ql-stroke-miter{stroke:#06c}@media (pointer:coarse){.ql-snow .ql-toolbar button:hover:not(.ql-active),.ql-snow.ql-toolbar button:hover:not(.ql-active){color:#444}.ql-snow .ql-toolbar button:hover:not(.ql-active) .ql-fill,.ql-snow .ql-toolbar button:hover:not(.ql-active) .ql-stroke.ql-fill,.ql-snow.ql-toolbar button:hover:not(.ql-active) .ql-fill,.ql-snow.ql-toolbar button:hover:not(.ql-active) .ql-stroke.ql-fill{fill:#444}.ql-snow .ql-toolbar button:hover:not(.ql-active) .ql-stroke,.ql-snow .ql-toolbar button:hover:not(.ql-active) .ql-stroke-miter,.ql-snow.ql-toolbar button:hover:not(.ql-active) .ql-stroke,.ql-snow.ql-toolbar button:hover:not(.ql-active) .ql-stroke-miter{stroke:#444}}.ql-snow{box-sizing:border-box}.ql-snow *{box-sizing:border-box}.ql-snow .ql-hidden{display:none}.ql-snow .ql-out-bottom,.ql-snow .ql-out-top{visibility:hidden}.ql-snow .ql-tooltip{position:absolute;transform:translateY(10px)}.ql-snow .ql-tooltip a{cursor:pointer;text-decoration:none}.ql-snow .ql-tooltip.ql-flip{transform:translateY(-10px)}.ql-snow .ql-formats{display:inline-block;vertical-align:middle}.ql-snow .ql-formats:after{clear:both;content:'';display:table}.ql-snow .ql-stroke{fill:none;stroke:#444;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}.ql-snow .ql-stroke-miter{fill:none;stroke:#444;stroke-miterlimit:10;stroke-width:2}.ql-snow .ql-fill,.ql-snow .ql-stroke.ql-fill{fill:#444}.ql-snow .ql-empty{fill:none}.ql-snow .ql-even{fill-rule:evenodd}.ql-snow .ql-stroke.ql-thin,.ql-snow .ql-thin{stroke-width:1}.ql-snow .ql-transparent{opacity:.4}.ql-snow .ql-direction svg:last-child{display:none}.ql-snow .ql-direction.ql-active svg:last-child{display:inline}.ql-snow .ql-direction.ql-active svg:first-child{display:none}.ql-snow .ql-editor h1{font-size:2em}.ql-snow .ql-editor h2{font-size:1.5em}.ql-snow .ql-editor h3{font-size:1.17em}.ql-snow .ql-editor h4{font-size:1em}.ql-snow .ql-editor h5{font-size:.83em}.ql-snow .ql-editor h6{font-size:.67em}.ql-snow .ql-editor a{text-decoration:underline}.ql-snow .ql-editor blockquote{border-left:4px solid #ccc;margin-bottom:5px;margin-top:5px;padding-left:16px}.ql-snow .ql-editor code,.ql-snow .ql-editor pre{background-color:#f0f0f0;border-radius:3px}.ql-snow .ql-editor pre{white-space:pre-wrap;margin-bottom:5px;margin-top:5px;padding:5px 10px}.ql-snow .ql-editor code{font-size:85%;padding:2px 4px}.ql-snow .ql-editor pre.ql-syntax{background-color:#23241f;color:#f8f8f2;overflow:visible}.ql-snow .ql-editor img{max-width:100%}.ql-snow .ql-picker{color:#444;display:inline-block;float:left;font-size:14px;font-weight:500;height:24px;position:relative;vertical-align:middle}.ql-snow .ql-picker-label{cursor:pointer;display:inline-block;height:100%;padding-left:8px;padding-right:2px;position:relative;width:100%}.ql-snow .ql-picker-label::before{display:inline-block;line-height:22px}.ql-snow .ql-picker-options{background-color:#fff;display:none;min-width:100%;padding:4px 8px;position:absolute;white-space:nowrap}.ql-snow .ql-picker-options .ql-picker-item{cursor:pointer;display:block;padding-bottom:5px;padding-top:5px}.ql-snow .ql-picker.ql-expanded .ql-picker-label{color:#ccc;z-index:2}.ql-snow .ql-picker.ql-expanded .ql-picker-label .ql-fill{fill:#ccc}.ql-snow .ql-picker.ql-expanded .ql-picker-label .ql-stroke{stroke:#ccc}.ql-snow .ql-picker.ql-expanded .ql-picker-options{display:block;margin-top:-1px;top:100%;z-index:1}.ql-snow .ql-color-picker,.ql-snow .ql-icon-picker{width:28px}.ql-snow .ql-color-picker .ql-picker-label,.ql-snow .ql-icon-picker .ql-picker-label{padding:2px 4px}.ql-snow .ql-color-picker .ql-picker-label svg,.ql-snow .ql-icon-picker .ql-picker-label svg{right:4px}.ql-snow .ql-icon-picker .ql-picker-options{padding:4px 0}.ql-snow .ql-icon-picker .ql-picker-item{height:24px;width:24px;padding:2px 4px}.ql-snow .ql-color-picker .ql-picker-options{padding:3px 5px;width:152px}.ql-snow .ql-color-picker .ql-picker-item{border:1px solid transparent;float:left;height:16px;margin:2px;padding:0;width:16px}.ql-snow .ql-picker:not(.ql-color-picker):not(.ql-icon-picker) svg{position:absolute;margin-top:-9px;right:0;top:50%;width:18px}.ql-snow .ql-picker.ql-font .ql-picker-item[data-label]:not([data-label=''])::before,.ql-snow .ql-picker.ql-font .ql-picker-label[data-label]:not([data-label=''])::before,.ql-snow .ql-picker.ql-header .ql-picker-item[data-label]:not([data-label=''])::before,.ql-snow .ql-picker.ql-header .ql-picker-label[data-label]:not([data-label=''])::before,.ql-snow .ql-picker.ql-size .ql-picker-item[data-label]:not([data-label=''])::before,.ql-snow .ql-picker.ql-size .ql-picker-label[data-label]:not([data-label=''])::before{content:attr(data-label)}.ql-snow .ql-picker.ql-header{width:98px}.ql-snow .ql-picker.ql-header .ql-picker-item::before,.ql-snow .ql-picker.ql-header .ql-picker-label::before{content:'Normal'}.ql-snow .ql-picker.ql-header .ql-picker-item[data-value=\"1\"]::before,.ql-snow .ql-picker.ql-header .ql-picker-label[data-value=\"1\"]::before{content:'Heading 1'}.ql-snow .ql-picker.ql-header .ql-picker-item[data-value=\"2\"]::before,.ql-snow .ql-picker.ql-header .ql-picker-label[data-value=\"2\"]::before{content:'Heading 2'}.ql-snow .ql-picker.ql-header .ql-picker-item[data-value=\"3\"]::before,.ql-snow .ql-picker.ql-header .ql-picker-label[data-value=\"3\"]::before{content:'Heading 3'}.ql-snow .ql-picker.ql-header .ql-picker-item[data-value=\"4\"]::before,.ql-snow .ql-picker.ql-header .ql-picker-label[data-value=\"4\"]::before{content:'Heading 4'}.ql-snow .ql-picker.ql-header .ql-picker-item[data-value=\"5\"]::before,.ql-snow .ql-picker.ql-header .ql-picker-label[data-value=\"5\"]::before{content:'Heading 5'}.ql-snow .ql-picker.ql-header .ql-picker-item[data-value=\"6\"]::before,.ql-snow .ql-picker.ql-header .ql-picker-label[data-value=\"6\"]::before{content:'Heading 6'}.ql-snow .ql-picker.ql-header .ql-picker-item[data-value=\"1\"]::before{font-size:2em}.ql-snow .ql-picker.ql-header .ql-picker-item[data-value=\"2\"]::before{font-size:1.5em}.ql-snow .ql-picker.ql-header .ql-picker-item[data-value=\"3\"]::before{font-size:1.17em}.ql-snow .ql-picker.ql-header .ql-picker-item[data-value=\"4\"]::before{font-size:1em}.ql-snow .ql-picker.ql-header .ql-picker-item[data-value=\"5\"]::before{font-size:.83em}.ql-snow .ql-picker.ql-header .ql-picker-item[data-value=\"6\"]::before{font-size:.67em}.ql-snow .ql-picker.ql-font{width:108px}.ql-snow .ql-picker.ql-font .ql-picker-item::before,.ql-snow .ql-picker.ql-font .ql-picker-label::before{content:'Sans Serif'}.ql-snow .ql-picker.ql-font .ql-picker-item[data-value=serif]::before,.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=serif]::before{content:'Serif'}.ql-snow .ql-picker.ql-font .ql-picker-item[data-value=monospace]::before,.ql-snow .ql-picker.ql-font .ql-picker-label[data-value=monospace]::before{content:'Monospace'}.ql-snow .ql-picker.ql-font .ql-picker-item[data-value=serif]::before{font-family:Georgia,Times New Roman,serif}.ql-snow .ql-picker.ql-font .ql-picker-item[data-value=monospace]::before{font-family:Monaco,Courier New,monospace}.ql-snow .ql-picker.ql-size{width:98px}.ql-snow .ql-picker.ql-size .ql-picker-item::before,.ql-snow .ql-picker.ql-size .ql-picker-label::before{content:'Normal'}.ql-snow .ql-picker.ql-size .ql-picker-item[data-value=small]::before,.ql-snow .ql-picker.ql-size .ql-picker-label[data-value=small]::before{content:'Small'}.ql-snow .ql-picker.ql-size .ql-picker-item[data-value=large]::before,.ql-snow .ql-picker.ql-size .ql-picker-label[data-value=large]::before{content:'Large'}.ql-snow .ql-picker.ql-size .ql-picker-item[data-value=huge]::before,.ql-snow .ql-picker.ql-size .ql-picker-label[data-value=huge]::before{content:'Huge'}.ql-snow .ql-picker.ql-size .ql-picker-item[data-value=small]::before{font-size:10px}.ql-snow .ql-picker.ql-size .ql-picker-item[data-value=large]::before{font-size:18px}.ql-snow .ql-picker.ql-size .ql-picker-item[data-value=huge]::before{font-size:32px}.ql-snow .ql-color-picker.ql-background .ql-picker-item{background-color:#fff}.ql-snow .ql-color-picker.ql-color .ql-picker-item{background-color:#000}.ql-toolbar.ql-snow{border:1px solid #ccc;box-sizing:border-box;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;padding:8px}.ql-toolbar.ql-snow .ql-formats{margin-right:15px}.ql-toolbar.ql-snow .ql-picker-label{border:1px solid transparent}.ql-toolbar.ql-snow .ql-picker-options{border:1px solid transparent;box-shadow:rgba(0,0,0,.2) 0 2px 8px}.ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-label{border-color:#ccc}.ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-options{border-color:#ccc}.ql-toolbar.ql-snow .ql-color-picker .ql-picker-item.ql-selected,.ql-toolbar.ql-snow .ql-color-picker .ql-picker-item:hover{border-color:#000}.ql-toolbar.ql-snow+.ql-container.ql-snow{border-top:0}.ql-snow .ql-tooltip{background-color:#fff;border:1px solid #ccc;box-shadow:0 0 5px #ddd;color:#444;padding:5px 12px;white-space:nowrap}.ql-snow .ql-tooltip::before{content:\"Visit URL:\";line-height:26px;margin-right:8px}.ql-snow .ql-tooltip input[type=text]{display:none;border:1px solid #ccc;font-size:13px;height:26px;margin:0;padding:3px 5px;width:170px}.ql-snow .ql-tooltip a.ql-preview{display:inline-block;max-width:200px;overflow-x:hidden;text-overflow:ellipsis;vertical-align:top}.ql-snow .ql-tooltip a.ql-action::after{border-right:1px solid #ccc;content:'Edit';margin-left:16px;padding-right:8px}.ql-snow .ql-tooltip a.ql-remove::before{content:'Remove';margin-left:8px}.ql-snow .ql-tooltip a{line-height:26px}.ql-snow .ql-tooltip.ql-editing a.ql-preview,.ql-snow .ql-tooltip.ql-editing a.ql-remove{display:none}.ql-snow .ql-tooltip.ql-editing input[type=text]{display:inline-block}.ql-snow .ql-tooltip.ql-editing a.ql-action::after{border-right:0;content:'Save';padding-right:0}.ql-snow .ql-tooltip[data-mode=link]::before{content:\"Enter link:\"}.ql-snow .ql-tooltip[data-mode=formula]::before{content:\"Enter formula:\"}.ql-snow .ql-tooltip[data-mode=video]::before{content:\"Enter video:\"}.ql-snow a{color:#06c}.ql-container.ql-snow{border:1px solid #ccc}\n                "));
   };
-
   return FormHtmlEditor;
 }(React.Component);
 
 var _this$3 = undefined;
-
 var NewMessageForm$1 = function NewMessageForm() {
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      conn = _useContext.conn,
-      activeChat = _useContext.activeChat,
-      messages = _useContext.messages,
-      setMessages = _useContext.setMessages;
-
+    conn = _useContext.conn,
+    activeChat = _useContext.activeChat,
+    messages = _useContext.messages,
+    setMessages = _useContext.setMessages;
   var _useState = React.useState(0),
-      iter = _useState[0],
-      setIter = _useState[1];
-
+    iter = _useState[0],
+    setIter = _useState[1];
   var _useState2 = React.useState(''),
-      value = _useState2[0],
-      setValue = _useState2[1];
-
+    value = _useState2[0],
+    setValue = _useState2[1];
   var _useState3 = React.useState(0),
-      trigger = _useState3[0],
-      setTrigger = _useState3[1];
-
+    trigger = _useState3[0],
+    setTrigger = _useState3[1];
   var _useState4 = React.useState([]),
-      attachments = _useState4[0],
-      setAttachments = _useState4[1];
-
+    attachments = _useState4[0],
+    setAttachments = _useState4[1];
   function _onRemove(index) {
     var newAttachments = attachments;
     newAttachments.splice(index, 1);
     setAttachments(newAttachments);
     setIter(iter + 1);
   }
-
   function handleChange(value) {
     setValue(value);
     setTrigger((trigger + 1) % 4);
-
     if (trigger === 1) {
       conn && reactChatEngine.isTyping(conn, activeChat);
     }
   }
-
   function handleSubmit() {
     if (!conn) return;
     var text = value.trim();
-
     if (text.length > 11 && text.slice(-11) === '<p><br></p>') {
       text = text.substr(0, text.length - 11);
     }
-
     var custom_json = {
       sender_id: Date.now().toString()
     };
@@ -4317,20 +4060,15 @@ var NewMessageForm$1 = function NewMessageForm() {
       chat: activeChat,
       created: created
     };
-
     if (text.length > 0 || attachments.length > 0) {
       reactChatEngine.sendMessage(conn, activeChat, data, function () {});
     }
-
     setValue('');
     setAttachments([]);
-
     var newMessages = _extends({}, messages);
-
     newMessages[data.created] = data;
     setMessages(newMessages);
   }
-
   return /*#__PURE__*/React__default.createElement("div", {
     id: "msg-form-container",
     style: styles$j.NewMessageFormContainer,
@@ -4364,15 +4102,12 @@ var styles$j = {
 
 var ScrollDownBar = function ScrollDownBar(props) {
   var didMountRef = React.useRef(false);
-
   var _useState = React.useState(false),
-      isVisible = _useState[0],
-      setIsVisible = _useState[1];
-
+    isVisible = _useState[0],
+    setIsVisible = _useState[1];
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      conn = _useContext.conn,
-      isBottomVisible = _useContext.isBottomVisible;
-
+    conn = _useContext.conn,
+    isBottomVisible = _useContext.isBottomVisible;
   var chat = props.chat;
   React.useEffect(function () {
     if (!didMountRef.current) {
@@ -4389,11 +4124,9 @@ var ScrollDownBar = function ScrollDownBar(props) {
       lastReadMessage = person.last_read;
     }
   });
-
   if (!isVisible || isBottomVisible || chat.last_message.id === undefined || chat.last_message.id === lastReadMessage) {
     return /*#__PURE__*/React__default.createElement("div", null);
   }
-
   return /*#__PURE__*/React__default.createElement("div", {
     style: {
       zIndex: '1',
@@ -4420,67 +4153,54 @@ var ScrollDownBar = function ScrollDownBar(props) {
 var initial = 45;
 var count = initial;
 var interval$1 = 33;
-
 var ChatFeed = function ChatFeed(props) {
   var _useState = React.useState(false),
-      hasFetchedMessages = _useState[0],
-      setHasFetchedMessages = _useState[1];
-
+    hasFetchedMessages = _useState[0],
+    setHasFetchedMessages = _useState[1];
   var _useState2 = React.useState(null),
-      currentChat = _useState2[0],
-      setCurrentChat = _useState2[1];
-
+    currentChat = _useState2[0],
+    setCurrentChat = _useState2[1];
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      conn = _useContext.conn,
-      chats = _useContext.chats,
-      setChats = _useContext.setChats,
-      messages = _useContext.messages,
-      setMessages = _useContext.setMessages,
-      activeChat = _useContext.activeChat,
-      setActiveChat = _useContext.setActiveChat,
-      loadMoreMessages = _useContext.loadMoreMessages,
-      setLoadMoreMessages = _useContext.setLoadMoreMessages,
-      isBottomVisible = _useContext.isBottomVisible,
-      typingCounter = _useContext.typingCounter;
-
+    conn = _useContext.conn,
+    chats = _useContext.chats,
+    setChats = _useContext.setChats,
+    messages = _useContext.messages,
+    setMessages = _useContext.setMessages,
+    activeChat = _useContext.activeChat,
+    setActiveChat = _useContext.setActiveChat,
+    loadMoreMessages = _useContext.loadMoreMessages,
+    setLoadMoreMessages = _useContext.setLoadMoreMessages,
+    isBottomVisible = _useContext.isBottomVisible,
+    typingCounter = _useContext.typingCounter;
   var typers = typingCounter && typingCounter[activeChat] ? typingCounter[activeChat] : [];
   var chat = chats && chats[currentChat];
-
   var needsIceBreaker = hasFetchedMessages && _$1.isEmpty(messages);
-
   function onReadMessage(chat) {
     if (chats) {
       var newChats = _extends({}, chats);
-
       newChats[chat.id] = chat;
       setChats(newChats);
     }
   }
-
   function onGetMessages(chatId, messages, scrollDownTo) {
     setHasFetchedMessages(true);
     setMessages(_$1.mapKeys(messages, 'created'));
-
     if (messages.length > 0) {
       var message = messages[messages.length - 1];
-
       if (props.userName && props.userName !== message.sender_username) {
         reactChatEngine.readMessage(conn, chatId, message.id, function (chat) {
           return onReadMessage(chat);
         });
       }
     }
-
     if (scrollDownTo) {
       reactScroll.animateScroll.scrollToBottom({
         duration: 0,
         containerId: scrollDownTo
       });
     }
-
     props.onGetMessages && props.onGetMessages(chatId, messages);
   }
-
   function loadMessages(loadMoreMessages) {
     if (loadMoreMessages) {
       count = count + interval$1;
@@ -4503,14 +4223,12 @@ var ChatFeed = function ChatFeed(props) {
       });
     }
   }
-
   React.useEffect(function () {
     loadMessages(false);
   }, [conn, activeChat, currentChat]);
   React.useEffect(function () {
     loadMessages(loadMoreMessages);
   }, [loadMoreMessages]);
-
   function getMyLastMessage(userName, chat) {
     var lastReadMessage = undefined;
     chat.people.map(function (person) {
@@ -4520,7 +4238,6 @@ var ChatFeed = function ChatFeed(props) {
     });
     return lastReadMessage;
   }
-
   React.useEffect(function () {
     if (isBottomVisible && !_$1.isEmpty(messages)) {
       setTimeout(function () {
@@ -4529,7 +4246,6 @@ var ChatFeed = function ChatFeed(props) {
           containerId: 'ce-feed-container'
         });
       }, 100);
-
       if (getMyLastMessage(conn.userName, chat) && getMyLastMessage(conn.userName, chat) !== chat.last_message.id) {
         reactChatEngine.readMessage(conn, currentChat, chat.last_message.id, function (chat) {
           return onReadMessage(chat);
@@ -4537,13 +4253,11 @@ var ChatFeed = function ChatFeed(props) {
       }
     }
   }, [messages, isBottomVisible]);
-
   if (conn === undefined) {
     return /*#__PURE__*/React__default.createElement(AuthFail, props);
   } else if (conn && chats !== null && _$1.isEmpty(chats)) {
     return /*#__PURE__*/React__default.createElement(CreateChat, null);
   }
-
   return /*#__PURE__*/React__default.createElement("div", {
     className: "ce-chat-feed",
     style: {
@@ -4589,13 +4303,10 @@ reactGridSystem.setConfiguration({
   maxScreenClass: 'xl',
   gutterWidth: 0
 });
-
 var ChatEngine = function ChatEngine(props) {
   var context = React.useContext(ChatEngineContext);
   var height = props.height;
-
   var propsAndContext = _extends({}, props, context);
-
   return /*#__PURE__*/React__default.createElement("div", {
     className: "ce-chat-engine",
     style: {
@@ -4645,37 +4356,30 @@ var ChatEngineApp = function ChatEngineApp(props) {
 };
 
 var _dangerButton;
-
 var Button = /*#__PURE__*/function (_Component) {
   _inheritsLoose(Button, _Component);
-
   function Button() {
     var _this;
-
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
-
     _this = _Component.call.apply(_Component, [this].concat(args)) || this;
     _this.state = {
       hovered: false
     };
     return _this;
   }
-
   var _proto = Button.prototype;
-
   _proto.render = function render() {
     var _this2 = this;
-
     var _this$props = this.props,
-        value = _this$props.value,
-        icon = _this$props.icon,
-        theme = _this$props.theme,
-        style = _this$props.style,
-        id = _this$props.id,
-        type = _this$props.type,
-        _onClick = _this$props.onClick;
+      value = _this$props.value,
+      icon = _this$props.icon,
+      theme = _this$props.theme,
+      style = _this$props.style,
+      id = _this$props.id,
+      type = _this$props.type,
+      _onClick = _this$props.onClick;
     var customStyle = style ? style : {};
     var hoverStyle = this.state.hovered ? styles$l.hoverButton : {};
     var themeStyle = theme === 'danger' ? styles$l.dangerButton : styles$l.button;
@@ -4699,7 +4403,6 @@ var Button = /*#__PURE__*/function (_Component) {
       className: "ce-primary-button " + (theme === 'danger' ? 'ce-danger-button' : '')
     }, icon === 'plus' && /*#__PURE__*/React__default.createElement(icons.PlusOutlined, null), icon === 'delete' && /*#__PURE__*/React__default.createElement(icons.DeleteOutlined, null), icon === 'user-add' && /*#__PURE__*/React__default.createElement(icons.UserAddOutlined, null), value && icon ? " " + value : value);
   };
-
   return Button;
 }(React.Component);
 var styles$l = {
@@ -4741,46 +4444,37 @@ Button.propTypes = {
 
 var Avatar = /*#__PURE__*/function (_Component) {
   _inheritsLoose(Avatar, _Component);
-
   function Avatar() {
     var _this;
-
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
-
     _this = _Component.call.apply(_Component, [this].concat(args)) || this;
     _this.state = {
       avatar: ''
     };
     return _this;
   }
-
   var _proto = Avatar.prototype;
-
   _proto.updateImg = function updateImg() {
     var avatar = this.props.avatar;
     avatar = avatar && avatar !== null ? avatar : '';
-
     if (avatar.split('?')[0] !== this.state.avatar.split('?')[0]) {
       this.setState({
         avatar: avatar
       });
     }
   };
-
   _proto.componentDidMount = function componentDidMount() {
     this.updateImg();
   };
-
   _proto.componentDidUpdate = function componentDidUpdate() {
     this.updateImg();
   };
-
   _proto.render = function render() {
     var _this$props = this.props,
-        username = _this$props.username,
-        is_online = _this$props.is_online;
+      username = _this$props.username,
+      is_online = _this$props.is_online;
     var customStyle = this.props.style ? this.props.style : {};
     var text = username ? username.substring(0, 2).toUpperCase() : '';
     var color = stringToColor(username);
@@ -4812,7 +4506,6 @@ var Avatar = /*#__PURE__*/function (_Component) {
       })
     }));
   };
-
   return Avatar;
 }(React.Component);
 var styles$m = {
@@ -4846,14 +4539,11 @@ Avatar.propTypes = {
 
 var TextInput = /*#__PURE__*/function (_Component) {
   _inheritsLoose(TextInput, _Component);
-
   function TextInput() {
     var _this;
-
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
-
     _this = _Component.call.apply(_Component, [this].concat(args)) || this;
     _this.state = {
       focused: false,
@@ -4861,12 +4551,9 @@ var TextInput = /*#__PURE__*/function (_Component) {
     };
     return _this;
   }
-
   var _proto = TextInput.prototype;
-
   _proto.componentDidMount = function componentDidMount() {
     var value = this.props["default"];
-
     if (value) {
       var event = {
         target: {
@@ -4879,10 +4566,8 @@ var TextInput = /*#__PURE__*/function (_Component) {
       });
     }
   };
-
   _proto.render = function render() {
     var _this2 = this;
-
     var customStyle = this.props.style ? this.props.style : {};
     var defaultStyle = this.state.focused ? styles$n.focusInput : styles$n.input;
     return (
@@ -4898,14 +4583,12 @@ var TextInput = /*#__PURE__*/function (_Component) {
           _this2.setState({
             focused: false
           });
-
           _this2.props.onBlur && _this2.props.onBlur();
         },
         onFocus: function onFocus() {
           _this2.setState({
             focused: true
           });
-
           _this2.props.onFocus && _this2.props.onFocus();
         },
         type: this.props.type ? this.props.type : "text",
@@ -4915,7 +4598,6 @@ var TextInput = /*#__PURE__*/function (_Component) {
       })
     );
   };
-
   return TextInput;
 }(React.Component);
 var styles$n = {
@@ -4953,14 +4635,11 @@ TextInput.propTypes = {
 
 var AutoCompleteInput = /*#__PURE__*/function (_Component) {
   _inheritsLoose(AutoCompleteInput, _Component);
-
   function AutoCompleteInput() {
     var _this;
-
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
-
     _this = _Component.call.apply(_Component, [this].concat(args)) || this;
     _this.state = {
       focused: false,
@@ -4968,9 +4647,7 @@ var AutoCompleteInput = /*#__PURE__*/function (_Component) {
     };
     return _this;
   }
-
   var _proto = AutoCompleteInput.prototype;
-
   _proto.onFocus = function onFocus() {
     this.onChange('', true);
     this.setState({
@@ -4978,24 +4655,20 @@ var AutoCompleteInput = /*#__PURE__*/function (_Component) {
     });
     this.props.onFocus && this.props.onFocus();
   };
-
   _proto.onBlur = function onBlur() {
     this.setState({
       focused: false
     });
     this.props.onBlur && this.props.onBlur();
   };
-
   _proto.onChange = function onChange(value, showAll) {
     this.setState({
       showAll: showAll
     });
     this.props.handleChange && this.props.handleChange(value);
   };
-
   _proto.getNames = function getNames() {
     var _this2 = this;
-
     var count = 0;
     var max = this.props.max ? this.props.max : 3;
     var results = [];
@@ -5007,14 +4680,11 @@ var AutoCompleteInput = /*#__PURE__*/function (_Component) {
     });
     return results;
   };
-
   _proto.renderOptions = function renderOptions() {
     var _this3 = this;
-
     if (!this.props.value && !this.state.showAll) {
       return /*#__PURE__*/React__default.createElement("div", null);
     }
-
     var results = this.getNames();
     return results.map(function (option, index) {
       return /*#__PURE__*/React__default.createElement("div", {
@@ -5029,17 +4699,13 @@ var AutoCompleteInput = /*#__PURE__*/function (_Component) {
       }, /*#__PURE__*/React__default.createElement(icons.CloseOutlined, null)));
     });
   };
-
   _proto.render = function render() {
     var _this4 = this;
-
     var options = this.props.options;
     var customStyle = this.props.style ? this.props.style : {};
-
     var defaultStyle = _extends({}, styles$o.input, {
       border: this.state.focused ? '1px solid #1890ff' : '1px solid #d9d9d9'
     });
-
     return /*#__PURE__*/React__default.createElement("div", null, /*#__PURE__*/React__default.createElement("input", {
       id: "ce-add-username-input",
       className: "ce-input ce-autocomplete-input",
@@ -5065,7 +4731,6 @@ var AutoCompleteInput = /*#__PURE__*/function (_Component) {
       }
     }, this.props.options && this.renderOptions()));
   };
-
   return AutoCompleteInput;
 }(React.Component);
 var styles$o = {
@@ -5268,14 +4933,11 @@ function getLatestMessages(props, chatId, count, callback) {
   }).then(function (response) {
     props.onGetMessages && props.onGetMessages(chatId, response.data);
     callback && callback(chatId, response.data);
-  })["catch"](function (error) {
-    console.log('Fetch Latest Messages Error', error);
-  });
+  })["catch"](function (error) {});
 }
 
 function sendMessage(props, chatId, data, callback) {
   var formdata = new FormData();
-
   if (data.attachments) {
     for (var i = 0; i < data.attachments.length; i++) {
       formdata.append('attachments', data.attachments[i], data.attachments[i].name);
@@ -5285,11 +4947,9 @@ function sendMessage(props, chatId, data, callback) {
       formdata.append('attachments', data.files[_i], data.files[_i].name);
     }
   }
-
   if (data.created) {
     formdata.append('created', data.created);
   }
-
   formdata.append('text', data.text);
   formdata.append('sender_username', data.sender_username);
   formdata.append('custom_json', JSON.stringify(data.custom_json ? data.custom_json : {}));
@@ -5354,18 +5014,15 @@ function isTyping(props, chatId, callback) {
 
 var ImagesInput = function ImagesInput(props) {
   var _React$createElement;
-
   var _useState = React.useState({
-    hovered: false
-  }),
-      state = _useState[0],
-      setState = _useState[1];
-
+      hovered: false
+    }),
+    state = _useState[0],
+    setState = _useState[1];
   function onSelect(event) {
     var files = Array.from(event.target.files);
     props.onSelectFiles && props.onSelectFiles(files);
   }
-
   return /*#__PURE__*/React__default.createElement("div", (_React$createElement = {
     className: "uploader",
     encType: "multipart/form-data",
@@ -5414,14 +5071,11 @@ var ImagesInput = function ImagesInput(props) {
 
 var MessageInput = /*#__PURE__*/function (_Component) {
   _inheritsLoose(MessageInput, _Component);
-
   function MessageInput() {
     var _this;
-
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
-
     _this = _Component.call.apply(_Component, [this].concat(args)) || this;
     _this.state = {
       value: null,
@@ -5429,9 +5083,7 @@ var MessageInput = /*#__PURE__*/function (_Component) {
     };
     return _this;
   }
-
   var _proto = MessageInput.prototype;
-
   _proto.resize = function resize() {
     var textarea = document.getElementById("msg-textarea");
     textarea.style.height = "";
@@ -5440,29 +5092,23 @@ var MessageInput = /*#__PURE__*/function (_Component) {
       height: Math.min(textarea.scrollHeight, 150)
     });
   };
-
   _proto.componentDidMount = function componentDidMount() {
     this.resize();
   };
-
   _proto.handleChange = function handleChange(e) {
     this.resize();
     this.props.handleChange && this.props.handleChange(e);
   };
-
   _proto.onKeyDown = function onKeyDown(e) {
     if (e.key === 'Enter') {
       e.preventDefault();
-
       if (this.props.value.length > 0) {
         this.props.onSubmit && this.props.onSubmit(e);
       }
     }
   };
-
   _proto.render = function render() {
     var _this2 = this;
-
     return /*#__PURE__*/React__default.createElement("input", {
       id: "msg-textarea",
       className: "ce-input ce-textarea-input",
@@ -5477,7 +5123,6 @@ var MessageInput = /*#__PURE__*/function (_Component) {
       }
     });
   };
-
   return MessageInput;
 }(React.Component);
 var styles$p = {
@@ -5497,57 +5142,45 @@ var styles$p = {
 };
 
 var _this$4 = undefined;
-
 var MessageFormSocial = function MessageFormSocial() {
   var _useContext = React.useContext(reactChatEngine.ChatEngineContext),
-      conn = _useContext.conn,
-      activeChat = _useContext.activeChat,
-      messages = _useContext.messages,
-      setMessages = _useContext.setMessages;
-
+    conn = _useContext.conn,
+    activeChat = _useContext.activeChat,
+    messages = _useContext.messages,
+    setMessages = _useContext.setMessages;
   var _useState = React.useState(0),
-      iter = _useState[0],
-      setIter = _useState[1];
-
+    iter = _useState[0],
+    setIter = _useState[1];
   var _useState2 = React.useState(''),
-      value = _useState2[0],
-      setValue = _useState2[1];
-
+    value = _useState2[0],
+    setValue = _useState2[1];
   var _useState3 = React.useState(0),
-      trigger = _useState3[0],
-      setTrigger = _useState3[1];
-
+    trigger = _useState3[0],
+    setTrigger = _useState3[1];
   var _useState4 = React.useState([]),
-      attachments = _useState4[0],
-      setAttachments = _useState4[1];
-
+    attachments = _useState4[0],
+    setAttachments = _useState4[1];
   if (!conn || conn === null) return /*#__PURE__*/React__default.createElement("div", null);
-
   function _onRemove(index) {
     var newAttachments = attachments;
     newAttachments.splice(index, 1);
     setAttachments(newAttachments);
     setIter(iter + 1);
   }
-
   function handleChange(e) {
     setValue(e.target.value);
     setTrigger((trigger + 1) % 4);
-
     if (trigger === 1) {
       conn && reactChatEngine.isTyping(conn, activeChat);
     }
   }
-
   function handleSubmit(e) {
     e.preventDefault();
     if (!conn) return;
     var text = value.trim();
-
     if (text.length > 11 && text.slice(-11) === '<p><br></p>') {
       text = text.substr(0, text.length - 11);
     }
-
     var custom_json = {
       sender_id: Date.now().toString()
     };
@@ -5561,20 +5194,15 @@ var MessageFormSocial = function MessageFormSocial() {
       chat: activeChat,
       created: created
     };
-
     if (text.length > 0 || attachments.length > 0) {
       reactChatEngine.sendMessage(conn, activeChat, data, function () {});
     }
-
     setValue('');
     setAttachments([]);
-
     var newMessages = _extends({}, messages);
-
     newMessages[data.created] = data;
     setMessages(newMessages);
   }
-
   return /*#__PURE__*/React__default.createElement("div", {
     id: "ce-social-msg-form-container",
     style: styles$q.messageFormContainer,
